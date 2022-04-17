@@ -7,6 +7,11 @@ import EmployeeLoginPage from './components/pages/EmployeeLoginPage'
 import RegisterPage from './components/pages/RegisterPage'
 import ForgetPasswordPage from './components/pages/ForgetPasswordPage'
 import CustomerHomePage from './components/pages/CustomerHomePage'
+import UserProfile from './components/pages/UserProfile'
+import UserBills from './components/pages/UserBills'
+import ReservationPage from './components/pages/ReservationPage'
+import DocumentPage from './components/pages/DocumentPage'
+import FailurePage from './components/pages/FailurePage'
 
 import './App.css'
 
@@ -21,6 +26,11 @@ export default function App() {
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/forget-password" element={<ForgetPasswordPage />} />
                     <Route path="/home" element={<CustomerHomePage />} />
+                    <Route path="/profile" element={<UserProfile />} />
+                    <Route path="/bills" element={<UserBills />} />
+                    <Route path="/reservations" element={<ReservationPage />} />
+                    <Route path="/documents" element={<DocumentPage />} />
+                    <Route path="/failures" element={<FailurePage />} />
                     <Route path="*" element={<NotExisting />} />
                 </Routes>
                 <Footer />

@@ -11,13 +11,17 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
+import { Link, useNavigate } from 'react-router-dom'
 
 const pages = ['Rezervacijos', 'Dokumentai', 'Gedimai'];
-const settings = ['Profilis', 'Sąskaitos', 'Dashboard', 'Paskyra'];
+const settings = ['Profilis', 'Sąskaitos', 'TEST', 'Atsijungti'];
 
 const user = localStorage.getItem('user');
 
 export const ResponsiveAppBar = () => {
+
+  const navigate = useNavigate();
+
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
 
@@ -34,6 +38,11 @@ export const ResponsiveAppBar = () => {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleLogOut = () => {
+    localStorage.clear();
+    navigate('/');
   };
 
   return (
@@ -94,15 +103,9 @@ export const ResponsiveAppBar = () => {
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
+            <Link to="/reservations"><Button sx={{ my: 2, color: 'white', display: 'block' }}>Rezervacijos</Button></Link>
+            <Link to="/documents"><Button sx={{ my: 2, color: 'white', display: 'block' }}>Dokumentai</Button></Link>
+            <Link to="/failures"><Button sx={{ my: 2, color: 'white', display: 'block' }}>Gedimai</Button></Link>
           </Box>
 
 
@@ -132,11 +135,9 @@ export const ResponsiveAppBar = () => {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
+              <Link to="/profile" style={{ textDecoration: 'none', color: 'black' }}><MenuItem>Profilis</MenuItem></Link>
+              <Link to="/bills" style={{ textDecoration: 'none', color: 'black' }}><MenuItem>Sąskaitos</MenuItem></Link>
+              <MenuItem onClick={handleLogOut}>Atsijungti</MenuItem>
             </Menu>
           </Box>
         </Toolbar>

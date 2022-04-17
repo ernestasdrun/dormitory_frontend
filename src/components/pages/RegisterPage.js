@@ -29,21 +29,34 @@ export default function SignUpPage() {
 
 
     function handleSubmit() {
-        fetch('http://localhost:5000/users/register', {
-            method: 'POST',
+        console.log("registration info" + registerInfo);
+        const json = JSON.stringify(registerInfo);
+        console.log("String reg info" + json);
+        /*const res = await axios.post("http://localhost:5000/users/register", json, {
             headers: {
-              'Content-Type': 'application/json; charset=utf-8',
-              'Connection': 'keep-alive',
+                'Content-Type': 'application/json'
+            }
+        });
+        res.data.data;
+        res.data.headers['Content-Type'];*/
+        fetch("http://localhost:5000/users/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
             },
-            body: JSON.stringify(registerInfo),
+            body: json,
           })
           .then(response => console.log(response.json()))
           .then(registerInfo => {
-            console.log('Success:', registerInfo);
+            console.log("Success:", registerInfo);
           })
           .catch((error) => {
-            console.error('Error:', error);
+            console.error("Error:", error);
           });
+    }
+
+    onsubmit = (event) => {
+        event.preventDefault()
     }
 
 
