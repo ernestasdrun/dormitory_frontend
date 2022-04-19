@@ -1,5 +1,6 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom'
+import { ResponsiveAppBar } from '../src/components/ResponsiveAppBar';
 
 import NotExisting from './components/pages/NotExisting'
 import LoginPage from './components/pages/LoginPage'
@@ -16,6 +17,8 @@ import FailurePage from './components/pages/FailurePage'
 import './App.css'
 
 export default function App() {
+
+    if (localStorage.getItem('user') == null)
     return (
         <Router>
             <div>
@@ -36,6 +39,28 @@ export default function App() {
                 <Footer />
             </div>
         </Router>
+    )
+    else return (
+        <Router>
+        <div>
+            <ResponsiveAppBar />
+            <Routes>
+                <Route exact path="/" element={<Navigate to="/login" />} />
+                <Route path="/login" element={<LoginPage />} />
+                <Route path="/login_employees" element={<EmployeeLoginPage />} />
+                <Route path="/register" element={<RegisterPage />} />
+                <Route path="/forget-password" element={<ForgetPasswordPage />} />
+                <Route path="/home" element={<CustomerHomePage />} />
+                <Route path="/profile" element={<UserProfile />} />
+                <Route path="/bills" element={<UserBills />} />
+                <Route path="/reservations" element={<ReservationPage />} />
+                <Route path="/documents" element={<DocumentPage />} />
+                <Route path="/failures" element={<FailurePage />} />
+                <Route path="*" element={<NotExisting />} />
+            </Routes>
+            <Footer />
+        </div>
+    </Router>
     )
 }
 

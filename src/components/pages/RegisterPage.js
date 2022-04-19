@@ -1,11 +1,13 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import {useState} from 'react';
 import { RegistrationSuccessMessage } from '../RegistrationSuccessMessage';
 
 import '../../App.css'
 
 export default function SignUpPage() {
+
+    const navigate = useNavigate();
 
     const axios = require('axios').default;
 
@@ -27,6 +29,11 @@ export default function SignUpPage() {
         })
     }
 
+    useEffect(() => {
+        if (localStorage.getItem('user') != null) {
+            navigate('/reservations');
+        }
+    }, []);
 
     function handleSubmit() {
         console.log("registration info" + registerInfo);
@@ -86,7 +93,7 @@ export default function SignUpPage() {
                 </p>
                 <p>
                     <label>Telefono numeris</label><br/>
-                    <input type="text" name="phoneNumber" required onChange={SetRegisterData} />
+                    <input type="tel" pattern="[0-9]{9}" name="phoneNumber" required onChange={SetRegisterData} />
                 </p>
                 <p>
                     <input type="checkbox" name="checkbox" id="checkbox" required /> <span>Sutinku su <a href="https://google.com" target="_blank" rel="noopener noreferrer">naudojimo su sąlygomis</a></span>.

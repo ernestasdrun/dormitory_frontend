@@ -20,6 +20,25 @@ const user = localStorage.getItem('user');
 
 export const ResponsiveAppBar = () => {
 
+  const [anchorElF, setAnchorElF] = React.useState(null);
+  const openF = Boolean(anchorElF);
+  const handleClickF = (event) => {
+    setAnchorElF(event.currentTarget);
+  };
+  const handleCloseF = () => {
+    setAnchorElF(null);
+  };
+
+  const [anchorElR, setAnchorElR] = React.useState(null);
+  const openR = Boolean(anchorElR);
+  const handleClickR = (event) => {
+    setAnchorElR(event.currentTarget);
+  };
+  const handleCloseR = () => {
+    setAnchorElR(null);
+  };
+
+
   const navigate = useNavigate();
 
   const [anchorElNav, setAnchorElNav] = React.useState(null);
@@ -103,9 +122,51 @@ export const ResponsiveAppBar = () => {
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            <Link to="/reservations"><Button sx={{ my: 2, color: 'white', display: 'block' }}>Rezervacijos</Button></Link>
+            <Button
+              id="reservations-button"
+              aria-controls={openR ? 'reservations-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={openR ? 'true' : undefined}
+              onClick={handleClickR}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Rezervacijos
+            </Button>
+            <Menu
+              id="reservations-menu"
+              anchorEl={anchorElR}
+              open={openR}
+              onClose={handleCloseR}
+              MenuListProps={{
+                'aria-labelledby': 'reservations-button',
+              }}
+            >
+              <Link to="/reservations"><MenuItem onClick={handleCloseR} style={{ textDecoration: 'none', color: 'black' }}>Nauja kambario rezervacija</MenuItem></Link>
+              <MenuItem onClick={handleCloseR}>Mano rezervacijos</MenuItem>
+            </Menu>
+            <Button
+              id="failures-button"
+              aria-controls={openF ? 'failures-menu' : undefined}
+              aria-haspopup="true"
+              aria-expanded={openF ? 'true' : undefined}
+              onClick={handleClickF}
+              sx={{ my: 2, color: 'white', display: 'block' }}
+            >
+              Gedimai
+            </Button>
+            <Menu
+              id="failures-menu"
+              anchorEl={anchorElF}
+              open={openF}
+              onClose={handleCloseF}
+              MenuListProps={{
+                'aria-labelledby': 'failures-button',
+              }}
+            >
+               <Link to="/failures"><MenuItem onClick={handleCloseF} style={{ textDecoration: 'none', color: 'black' }}>Registruoti gedimą</MenuItem></Link>
+              <MenuItem onClick={handleCloseF}>Mano užregistruoti gedimai</MenuItem>
+            </Menu>
             <Link to="/documents"><Button sx={{ my: 2, color: 'white', display: 'block' }}>Dokumentai</Button></Link>
-            <Link to="/failures"><Button sx={{ my: 2, color: 'white', display: 'block' }}>Gedimai</Button></Link>
           </Box>
 
 

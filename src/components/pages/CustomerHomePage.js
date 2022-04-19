@@ -9,7 +9,6 @@ export default function CustomerHomePage() {
 
     return (
         <div className="text-center m-0">
-            <ResponsiveAppBar />
 
         </div>
     )

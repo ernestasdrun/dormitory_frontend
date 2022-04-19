@@ -5,7 +5,6 @@ import { Link } from 'react-router-dom'
 export default function UserBills() {
     return (
         <div className="text-center">
-            <ResponsiveAppBar />
             <h1 className="main-title home-page-title">Saskaitos</h1>
         </div>
     )

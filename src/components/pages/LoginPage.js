@@ -1,8 +1,7 @@
-import React from 'react'
-import { Link } from 'react-router-dom'
+import React, { useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { ResponsiveAppBar } from '../ResponsiveAppBar';
 import {useState} from 'react';
-import { useNavigate } from "react-router-dom";
 import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
@@ -30,6 +29,12 @@ export default function LoginPage() {
             }
         })
     }
+
+    useEffect(() => {
+        if (localStorage.getItem('user') != null) {
+            navigate('/reservations');
+        }
+    }, []);
 
     onsubmit = (event) => {
         event.preventDefault()
