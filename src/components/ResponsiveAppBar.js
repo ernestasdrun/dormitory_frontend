@@ -142,7 +142,7 @@ export const ResponsiveAppBar = () => {
               }}
             >
               <Link to="/reservations"><MenuItem onClick={handleCloseR} style={{ textDecoration: 'none', color: 'black' }}>Nauja kambario rezervacija</MenuItem></Link>
-              <MenuItem onClick={handleCloseR}>Mano rezervacijos</MenuItem>
+              <Link to="/reservList"><MenuItem onClick={handleCloseR} style={{ textDecoration: 'none', color: 'black' }}>Mano rezervacijos</MenuItem></Link>
             </Menu>
             <Button
               id="failures-button"

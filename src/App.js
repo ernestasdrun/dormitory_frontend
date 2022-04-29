@@ -13,6 +13,7 @@ import UserBills from './components/pages/UserBills'
 import ReservationPage from './components/pages/ReservationPage'
 import DocumentPage from './components/pages/DocumentPage'
 import FailurePage from './components/pages/FailurePage'
+import ReservationsListPage from './components/pages/ReservationsListPage'
 
 import './App.css'
 
@@ -32,6 +33,7 @@ export default function App() {
                     <Route path="/profile" element={<UserProfile />} />
                     <Route path="/bills" element={<UserBills />} />
                     <Route path="/reservations" element={<ReservationPage />} />
+                    <Route path="/reservList" element={<ReservationsListPage />} />
                     <Route path="/documents" element={<DocumentPage />} />
                     <Route path="/failures" element={<FailurePage />} />
                     <Route path="*" element={<NotExisting />} />
@@ -54,6 +56,7 @@ export default function App() {
                 <Route path="/profile" element={<UserProfile />} />
                 <Route path="/bills" element={<UserBills />} />
                 <Route path="/reservations" element={<ReservationPage />} />
+                <Route path="/reservList" element={<ReservationsListPage />} />
                 <Route path="/documents" element={<DocumentPage />} />
                 <Route path="/failures" element={<FailurePage />} />
                 <Route path="*" element={<NotExisting />} />
