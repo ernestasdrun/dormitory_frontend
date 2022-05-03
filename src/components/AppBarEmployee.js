@@ -21,7 +21,7 @@ const settings = ['Profilis', 'Sąskaitos', 'TEST', 'Atsijungti'];
 
 const user = localStorage.getItem('user');
 
-export const ResponsiveAppBar = () => {
+export const AppBarEmployee = () => {
 
   const [anchorElF, setAnchorElF] = React.useState(null);
   const openF = Boolean(anchorElF);
@@ -66,12 +66,6 @@ export const ResponsiveAppBar = () => {
     localStorage.clear();
     navigate('/');
   };
-
-  /*useEffect(() => {
-    if (localStorage.getItem('userType') == 10) {
-      return 'Mano rezervacijos'
-    } else return 'Gyventojų rezervacijos'
-  }, []);*/
 
   return (
     <AppBar position="static">
@@ -151,7 +145,7 @@ export const ResponsiveAppBar = () => {
               }}
             >
               <Link to="/reservations"><MenuItem onClick={handleCloseR} style={{ textDecoration: 'none', color: 'black' }}>Nauja kambario rezervacija</MenuItem></Link>
-              <Link to="/reservList"><MenuItem onClick={handleCloseR} style={{ textDecoration: 'none', color: 'black' }}>Mano rezervacijos</MenuItem></Link>
+              <Link to="/reservList"><MenuItem onClick={handleCloseR} style={{ textDecoration: 'none', color: 'black' }}>Vartotojų rezervacijos</MenuItem></Link>
             </Menu>
             <Button
               id="failures-button"
@@ -173,7 +167,7 @@ export const ResponsiveAppBar = () => {
               }}
             >
                <Link to="/failures"><MenuItem onClick={handleCloseF} style={{ textDecoration: 'none', color: 'black' }}>Registruoti gedimą</MenuItem></Link>
-              <MenuItem onClick={handleCloseF}>Mano užregistruoti gedimai</MenuItem>
+              <MenuItem onClick={handleCloseF}>Vartotojų užregistruoti gedimai</MenuItem>
             </Menu>
             <Link to="/documents"><Button sx={{ my: 2, color: 'white', display: 'block' }}>Dokumentai</Button></Link>
           </Box>

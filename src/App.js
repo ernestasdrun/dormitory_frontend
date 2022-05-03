@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-dom'
-import { ResponsiveAppBar } from '../src/components/ResponsiveAppBar';
 
 import NotExisting from './components/pages/NotExisting'
 import LoginPage from './components/pages/LoginPage'
@@ -45,7 +44,6 @@ export default function App() {
     else return (
         <Router>
         <div>
-            <ResponsiveAppBar />
             <Routes>
                 <Route exact path="/" element={<Navigate to="/login" />} />
                 <Route path="/login" element={<LoginPage />} />

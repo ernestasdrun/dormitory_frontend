@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ResponsiveAppBar } from '../ResponsiveAppBar';
+import { AppBarEmployee } from '../AppBarEmployee';
 import {useState} from 'react';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
@@ -11,6 +12,8 @@ import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+
+import '../../App.css'
 
 export default function ReservationPage() {
 
@@ -70,7 +73,6 @@ export default function ReservationPage() {
     const clearRoomState = () => {
         setRoomInfo({ ...roomInfo });
         setRoomInfo(roomInfo => []);
-        //reservationInfo.room = "";
     };
 
     //Get dorms on entering page
@@ -158,7 +160,7 @@ export default function ReservationPage() {
 
         function handleSubmit() {
             const json = JSON.stringify(reservationInfo);
-            fetch("http://localhost:5000/reservations/create", {
+            fetch(`http://localhost:5000/reservations/create/${localStorage.getItem('user')}`, {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -178,12 +180,14 @@ export default function ReservationPage() {
         if (isReserved) {
             return (
                 <div className="text-center">
+                    <ResponsiveAppBar />
                     <h1 className="main-title home-page-title">Rezervacija (yra paskyra)</h1>
                 </div>
             )
         } else {
             return (
                 <div className="text-center">
+                    <ResponsiveAppBar />
                     <button onClick={() => {console.log("Array:", floorInfo);}}>click me</button>
                     <form onSubmit={handleSubmit}>
                     <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
@@ -303,12 +307,14 @@ export default function ReservationPage() {
         if (true) {
             return (
                 <div className="text-center">
+                    <AppBarEmployee />
                     <h1 className="main-title home-page-title">Rezervacijos</h1>
                 </div>
             )
         } else {
             return (
                 <div className="text-center">
+                    <AppBarEmployee />
                     <h1 className="main-title home-page-title">Rezervacijos</h1>
                 </div>
             )
@@ -316,6 +322,7 @@ export default function ReservationPage() {
     } else {
         return (
             <div className="text-center">
+                <AppBarEmployee />
                     <h1 className="main-title home-page-title">Rezervacijos</h1>
                 </div>
         )

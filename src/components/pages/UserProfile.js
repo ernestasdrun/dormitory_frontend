@@ -3,6 +3,8 @@ import { ResponsiveAppBar } from '../ResponsiveAppBar';
 import { Link } from 'react-router-dom'
 import {useState} from 'react';
 
+import '../../App.css'
+
 export default function UserProfile() {
 
 
@@ -94,6 +96,7 @@ export default function UserProfile() {
 
     return (
         <div className="text-center">
+            <ResponsiveAppBar />
             <p> </p>
             <h2>Vartotojo informacijos naujinimas</h2>
             <form onSubmit={handleSubmit}>
