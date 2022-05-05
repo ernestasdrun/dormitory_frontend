@@ -49,17 +49,7 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
 
     ////////////////////STRIPE payment
     const [clientSecret, setClientSecret] = useState("");
-
-    useEffect(() => {
-      // Create PaymentIntent as soon as the page loads
-      fetch("http://localhost:5000/payments/create-payment-intent", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ items: [{ id: "xl-tshirt" }] }),
-      })
-        .then((res) => res.json())
-        .then((data) => setClientSecret(data.clientSecret));
-    }, []);
+    const [amount, setAmount] = useState("");
 
     const appearance = {
       theme: 'stripe',
@@ -498,6 +488,18 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
     useEffect(() => {
       if (roomInfo.maxResidents != "") {
         console.log("ID: " + roomInfo._id);
+
+        // Create PaymentIntent as soon as the payment section loads
+        fetch("http://localhost:5000/bills/depositPayment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ items: [{ room_id: selectedInfo.room_id, res_id: selectedInfo._id, user_id: selectedInfo.user_id }] }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setClientSecret(data.clientSecret);
+            setAmount(data.amount);
+            console.log("data: " + data.amount);});
         setOpen(true);
       }
     }, [roomInfo]);
@@ -592,9 +594,10 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
           </Paper>
         </Box>
         <Dialog open={open} onClose={handleClose}>
+          <h4>Mokėtina suma: {amount} Eur</h4>
         {clientSecret && (
         <Elements options={options} stripe={stripePromise}>
-          <CheckoutForm />
+          <CheckoutForm user_id={selectedInfo.user_id} room_id={selectedInfo.room_id} res_id={selectedInfo._id} amount={amount}/>
         </Elements>
         )}
         </Dialog>

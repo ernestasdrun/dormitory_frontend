@@ -3,7 +3,7 @@ import {PaymentElement, useStripe, useElements} from "@stripe/react-stripe-js";
 
 import '../App.css'
 
-export const CheckoutForm = () => {
+export const CheckoutForm = (props) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -56,9 +56,61 @@ export const CheckoutForm = () => {
       elements,
       confirmParams: {
         // Make sure to change this to your payment completion page
-        return_url: "http://localhost:3000",
+        return_url: "if_required",
       },
+    }).then(function(result) {
+      updateDepositData();
     });
+
+
+
+    function updateDepositData() {
+
+      fetch(`http://localhost:5000/users/updateById/${props.user_id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ room_id: props.room_id }),
+      })
+        .then((res) => res.json())
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+      fetch(`http://localhost:5000/rooms/updateCountById/${props.room_id}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ residents: 1 }),
+      })
+        .then((res) => res.json())
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+      fetch(`http://localhost:5000/reservations/update`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ _id: props.res_id, status: "Apgyvendinimas" }),
+      })
+        .then((res) => res.json())
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+      fetch(`http://localhost:5000/bills/createDeposit`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ amount: props.amount, type: "deposit", user_id: props.user_id }),
+      })
+        .then((res) => res.json())
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+
+    }
+
+
+
+    
 
     // This point will only be reached if there is an immediate error when
     // confirming the payment. Otherwise, your customer will be redirected to
@@ -79,7 +131,7 @@ export const CheckoutForm = () => {
       <PaymentElement id="payment-element" />
       <button disabled={isLoading || !stripe || !elements} id="submit">
         <span id="button-text">
-          {isLoading ? <div className="spinner" id="spinner"></div> : "Pay now"}
+          {isLoading ? <div className="spinner" id="spinner"></div> : "Sumokėti"}
         </span>
       </button>
       {/* Show any error or success messages */}
