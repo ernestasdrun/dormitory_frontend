@@ -188,7 +188,6 @@ export default function ReservationPage() {
             return (
                 <div className="text-center">
                     <ResponsiveAppBar />
-                    <button onClick={() => {console.log("Array:", floorInfo);}}>click me</button>
                     <form onSubmit={handleSubmit}>
                     <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
                         <Grid item xs={4}>

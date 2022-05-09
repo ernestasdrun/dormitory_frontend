@@ -36,7 +36,7 @@ export default function LoginPage() {
         }
     }, []);
 
-    onsubmit = (event) => {
+    const onsubmit = (event) => {
         event.preventDefault()
     }
 

@@ -37,6 +37,7 @@ import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import EditIcon from '@mui/icons-material/Edit';
 import EuroIcon from '@mui/icons-material/Euro';
+import CancelIcon from '@mui/icons-material/Cancel';
 
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
@@ -512,6 +513,25 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
       setRowsPerPage(parseInt(event.target.value, 10));
       setPage(0);
     };
+
+    function cancelReservation(id) {
+      const json = JSON.stringify({
+        _id: id,
+        status: "Atšaukta"
+      });
+      fetch(`http://localhost:5000/reservations/update`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: json,
+        })
+        .then(response => console.log(response.json()))
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    }
+
   
     const isSelected = (number) => selected.indexOf(number) !== -1;
   
@@ -550,7 +570,6 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
                       return (
                         <TableRow
                           hover
-                          onClick={(event) => SetSelectedData(event, row.user_id, row.room_id, row._id, row.firstName, row.surname, row.dorm, row.room, row.floor, row.status)}
                           aria-checked={isItemSelected}
                           tabIndex={-1}
                           key={row.number}
@@ -572,9 +591,16 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
                           <TableCell align="right">{row.floor}</TableCell>
                           <TableCell align="right">{row.status}</TableCell>
                           <TableCell style={{display: row.status == "Laukiama depozito" ? 'block' : 'none' }}>
-                            <Button variant="contained" endIcon={<EuroIcon />} >
+                            <Button variant="contained" endIcon={<EuroIcon />} onClick={(event) => SetSelectedData(event, row.user_id, row.room_id, row._id, row.firstName, row.surname, row.dorm, row.room, row.floor, row.status)}>
                               Sumokėti depozitą
                             </Button>
+                          </TableCell>
+                          <TableCell style={{display: row.status == "Nepatvirtinta" ? 'block' : 'none' }}>
+                          <Tooltip title="Atšaukti rezervaciją">
+                            <IconButton aria-label="cancel" size="large" onClick={(event) => cancelReservation(row._id)}>
+                              <CancelIcon />
+                            </IconButton>
+                          </Tooltip>
                           </TableCell>
                         </TableRow>
                       );
@@ -594,7 +620,7 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
           </Paper>
         </Box>
         <Dialog open={open} onClose={handleClose}>
-          <h4>Mokėtina suma: {amount} Eur</h4>
+          <h4>Mokėtina suma: {Number(amount).toFixed(2)} Eur</h4>
         {clientSecret && (
         <Elements options={options} stripe={stripePromise}>
           <CheckoutForm user_id={selectedInfo.user_id} room_id={selectedInfo.room_id} res_id={selectedInfo._id} amount={amount}/>
