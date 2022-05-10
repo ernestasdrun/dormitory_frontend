@@ -37,7 +37,6 @@ export default function App() {
                     <Route path="/failures" element={<FailurePage />} />
                     <Route path="*" element={<NotExisting />} />
                 </Routes>
-                <Footer />
             </div>
         </Router>
     )
@@ -59,26 +58,7 @@ export default function App() {
                 <Route path="/failures" element={<FailurePage />} />
                 <Route path="*" element={<NotExisting />} />
             </Routes>
-            <Footer />
         </div>
     </Router>
     )
-}
-
-const Footer = () => {
-    return (
-        <p className="text-center" style={ FooterStyle }>Designed & coded by Ernestas</p>
-    )
-}
-
-const FooterStyle = {
-    background: "#222",
-    fontSize: ".8rem",
-    color: "#fff",
-    position: "absolute",
-    bottom: 0,
-    padding: "1rem",
-    margin: 0,
-    width: "100%",
-    opacity: ".5"
 }

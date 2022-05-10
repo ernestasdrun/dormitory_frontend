@@ -6,10 +6,16 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
 
 import '../../App.css'
 
 export default function LoginPage() {
+
+    const [openNotification, setOpenNotification] = useState(false);
 
     const navigate = useNavigate();
 
@@ -40,23 +46,10 @@ export default function LoginPage() {
         event.preventDefault()
     }
 
-    //const handleChange = (event) => {
-    //    setLoginInfo(event.target.value);
-    //  };
 
 
     function handleSubmit() {
         const json = JSON.stringify(loginInfo);
-        //console.log("registration info" + registerInfo);
-        //const json = JSON.stringify(registerInfo);
-        //console.log("String reg info" + json);
-        /*const res = await axios.post("http://localhost:5000/users/register", json, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        res.data.data;
-        res.data.headers['Content-Type'];*/
         fetch(`http://localhost:5000/users/login_${loginInfo.userName}`, {
             method: "POST",
             headers: {
@@ -113,7 +106,6 @@ export default function LoginPage() {
             </form>
             <footer>
                 <p>Neturiti paskyros? <Link to="/register">Registruotis</Link>.</p>
-                <p><Link to="/login_employees">Prisijungimas darbuotojams</Link>.</p>
             </footer>
         </div>
     )

@@ -3,6 +3,7 @@ import axios from 'axios';
 import { ResponsiveAppBar } from '../ResponsiveAppBar';
 import { AppBarEmployee } from '../AppBarEmployee';
 import { Link } from 'react-router-dom'
+import { BillCheckout } from '../BillCheckout';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -36,11 +37,29 @@ import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
+import EuroIcon from '@mui/icons-material/Euro';
+import { CheckoutForm } from '../CheckoutForm';
+
+import { loadStripe } from "@stripe/stripe-js";
+import { Elements } from "@stripe/react-stripe-js";
 
 import '../../App.css'
 
+const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1S8ohxBNGP9x1h90FZNQH9n97zoF0sY0mZS9maVy4tDIAvtfGuKk00zc6fG0WJ");
   
   export default function UserBills() {
+
+    const [clientSecret, setClientSecret] = useState("");
+    const [amount, setAmount] = useState("");
+
+    const appearance = {
+      theme: 'stripe',
+    };
+    const options = {
+      clientSecret,
+      appearance,
+    };
+
     
     useEffect(() => {
       if (localStorage.getItem('userType') == 10) {
@@ -50,7 +69,6 @@ import '../../App.css'
         .then(response => {
             return response.json()})
         .then(resListInform => {
-            console.log("TTTT: " + resListInform.result[1]);
           for (var index = 0; index <  resListInform.result.length; index++) {
             setResData([resListInform.roomNumber, resListInform.dormAddress, resListInform.user, resListInform.result[index]]);
           }
@@ -114,9 +132,38 @@ import '../../App.css'
         for (var index = resListInfo.length - 1; index >= 0; index--) {
             let date = new Date(resListInfo[index][3].dateCreated);
             let dateLast = new Date(resListInfo[index][3].deadlineDate);
-            setTableData(createData(index, resListInfo[index][2][0].user_id, resListInfo[index][2][0].firstName, resListInfo[index][2][0].surname, resListInfo[index][3]._id, resListInfo[index][1], resListInfo[index][0], date.toISOString().split('T')[0], dateLast.toISOString().split('T')[0], resListInfo[index][3].totalAmount, resListInfo[index][3].isPaid));
+            setTableData(createData(index, resListInfo[index][3].user_id, resListInfo[index][2][0].firstName, resListInfo[index][2][0].surname, resListInfo[index][3]._id, resListInfo[index][1], resListInfo[index][0], date.toISOString().split('T')[0], dateLast.toISOString().split('T')[0], resListInfo[index][3].totalAmount, resListInfo[index][3].isPaid));
         }
       }
+
+
+      const[selectedInfo, setSelectedInfo] = useState({
+        user_id: "",
+        _id: "",
+        totalAmount: "",
+        isPaid: ""
+    }); 
+  
+    function SetSelectedInfoData(event) {
+      setSelectedInfo(prevFormData =>  {
+          return {
+              ...prevFormData,
+              [event.target.name]: event.target.value
+          }
+      })
+  }
+  
+    function SetSelectedData(event, user_id, _id, totalAmount, isPaid) {
+        setSelectedInfo(prevFormData =>  {
+            return {
+              user_id: user_id,
+              _id: _id,
+              totalAmount: totalAmount,
+              isPaid: isPaid
+            }
+        })
+    }
+
 
       const[rows, setTableInfo] = useState([]);
       function setTableData(newElement) {
@@ -201,6 +248,12 @@ import '../../App.css'
             numeric: true,
             disablePadding: false,
             label: 'Iš viso (Eur)',
+          },
+          {
+            id: 'paidStatus',
+            numeric: true,
+            disablePadding: false,
+            label: 'Būsena',
           },
       ];
       
@@ -310,8 +363,51 @@ import '../../App.css'
       setSelected([]);
     };
 
+    const handleClick = (event, number) => {
 
-    const [open, setOpen] = React.useState(false);
+      console.log("kambarys: " + selectedInfo.room_id);
+      fetch(`http://localhost:5000/rooms/getRoom/${selectedInfo.room_id}`, {
+          method: "GET"
+        })
+        .then(response => {
+            return response.json()})
+        .then(roomInform => {
+          //setRoomData(roomInform[0]);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
+        });
+    };
+
+
+    useEffect(() => {
+      console.log("selected: " + selectedInfo.totalAmount);
+      if (selectedInfo.totalAmount != "") {
+        fetch("http://localhost:5000/bills/billPayment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ items: [{ totalAmount: selectedInfo.totalAmount }] }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            setClientSecret(data.clientSecret);
+            setAmount(data.amount);
+            console.log("data: " + data.amount);});
+        setOpen(true);
+        //handleClick();
+      }
+    }, [selectedInfo.totalAmount]);
+
+    const handleClickOpen = () => {
+      setOpen(true);
+    };
+  
+    const handleClose = () => {
+      setOpen(false);
+    };
+
+
+    const [open, setOpen] = useState(false);
 
 
     const handleChangePage = (event, newPage) => {
@@ -382,7 +478,7 @@ import '../../App.css'
                             <TableCell align="right" name="userSurname">{row.totalAmount.toFixed(2)}</TableCell>
                             <TableCell align="right" name="isPaid" bgcolor={row.isPaid ? "#6fd466" : "#e6735c"}>{row.isPaid ? "Sumokėta" : "Nesumokėta"}</TableCell>
                             <TableCell style={{display: row.isPaid ? 'none' : 'block' }}>
-                              <Button variant="contained" endIcon={<BorderColorIcon />} >
+                              <Button variant="contained" endIcon={<EuroIcon />} onClick={(event) => SetSelectedData(event, row.user_id, row._id, row.totalAmount, row.isPaid)}>
                                 Sumokėti
                               </Button>
                             </TableCell>
@@ -402,8 +498,15 @@ import '../../App.css'
                 onRowsPerPageChange={handleChangeRowsPerPage}
               />
             </Paper>
+            <Dialog open={open} onClose={handleClose}>
+              <h4>Mokėtina suma: {Number(10).toFixed(2)} Eur</h4>
+              {clientSecret && (
+              <Elements options={options} stripe={stripePromise}>
+                <BillCheckout user_id={selectedInfo.user_id} _id={selectedInfo._id} totalAmount={selectedInfo.totalAmount}/>
+              </Elements>
+              )}
+            </Dialog>
           </Box>
-          <button onClick={() => {console.log(rows)}}>test</button>
           </div>
         );
       } else {

@@ -38,6 +38,10 @@ import { styled } from '@mui/material/styles';
 import EditIcon from '@mui/icons-material/Edit';
 import EuroIcon from '@mui/icons-material/Euro';
 import CancelIcon from '@mui/icons-material/Cancel';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
+import CloseIcon from '@mui/icons-material/Close';
+import SearchBar from "material-ui-search-bar";
 
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
@@ -47,6 +51,10 @@ import '../../App.css'
 const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1S8ohxBNGP9x1h90FZNQH9n97zoF0sY0mZS9maVy4tDIAvtfGuKk00zc6fG0WJ");
 
   export default function ReservationsListPage() {
+
+
+    const [openNotification, setOpenNotification] = useState(false);
+    const [receivedSuccess, setReceivedSuccess] = useState(false);
 
     ////////////////////STRIPE payment
     const [clientSecret, setClientSecret] = useState("");
@@ -373,7 +381,17 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
           },
           body: json,
         })
-        .then(response => console.log(response.json()))
+        .then(response => {
+          if (response.status == 200) {
+            console.log("success");
+            setReceivedSuccess(true);
+            setOpenNotification(true);
+          } else {
+            console.log("not success")
+            setReceivedSuccess(false);
+            setOpenNotification(true);
+          }
+        })
         .catch((error) => {
           console.error("Error:", error);
         });
@@ -531,7 +549,6 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
           console.error("Error:", error);
         });
     }
-
   
     const isSelected = (number) => selected.indexOf(number) !== -1;
   
@@ -742,6 +759,26 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
               <Button onClick={handleClose}>Atšaukti</Button>
               <Button onClick={handleSubmit}>Pateikti duomenis</Button>
             </DialogActions>
+              <Collapse in={openNotification}>
+                <Alert
+                  severity={receivedSuccess ? "success" : "error"}
+                  action={
+                    <IconButton
+                      aria-label="close"
+                      color="inherit"
+                      size="small"
+                      onClick={() => {
+                        setOpenNotification(false);
+                      }}
+                    >
+                      <CloseIcon fontSize="inherit" />
+                    </IconButton>
+                  }
+                  sx={{ mb: 2 }}
+                >
+                {receivedSuccess ? "Pakeitimai išsaugoti" : "Keitimas nepavyko"}
+              </Alert>
+            </Collapse>
           </Dialog>
         </div>
       );

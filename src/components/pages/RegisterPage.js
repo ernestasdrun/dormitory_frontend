@@ -2,12 +2,19 @@ import React, { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import {useState} from 'react';
 import { RegistrationSuccessMessage } from '../RegistrationSuccessMessage';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
 
 import '../../App.css'
 
 export default function SignUpPage() {
 
     const navigate = useNavigate();
+
+    const [openNotification, setOpenNotification] = useState(false);
+    const [receivedSuccess, setReceivedSuccess] = useState(false);
 
     const axios = require('axios').default;
 
@@ -36,16 +43,8 @@ export default function SignUpPage() {
     }, []);
 
     function handleSubmit() {
-        console.log("registration info" + registerInfo);
         const json = JSON.stringify(registerInfo);
-        console.log("String reg info" + json);
-        /*const res = await axios.post("http://localhost:5000/users/register", json, {
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        });
-        res.data.data;
-        res.data.headers['Content-Type'];*/
+
         fetch("http://localhost:5000/users/register", {
             method: "POST",
             headers: {
@@ -53,9 +52,14 @@ export default function SignUpPage() {
             },
             body: json,
           })
-          .then(response => console.log(response.json()))
-          .then(registerInfo => {
-            console.log("Success:", registerInfo);
+          .then(response => {
+            if (response.status == 200) {
+                setReceivedSuccess(true);
+                setOpenNotification(true);
+            } else {
+                setReceivedSuccess(false);
+                setOpenNotification(true);
+            }
           })
           .catch((error) => {
             console.error("Error:", error);
@@ -101,6 +105,26 @@ export default function SignUpPage() {
                 <p>
                     <button id="sub_btn" type="submit">Registruotis</button>
                 </p>
+                    <Collapse in={openNotification}>
+                        <Alert
+                            severity={receivedSuccess ? "success" : "error"}
+                            action={
+                            <IconButton
+                            aria-label="close"
+                            color="inherit"
+                            size="small"
+                            onClick={() => {
+                            setOpenNotification(false);
+                            }}
+                            >
+                            <CloseIcon fontSize="inherit" />
+                            </IconButton>
+                        }
+                        sx={{ mb: 2 }}
+                        >
+                        {receivedSuccess ? "Registracija sėkminga" : "Registracija nepavyko"}
+                        </Alert>
+                    </Collapse>
             </form>
             <footer>
                 <p><Link to="/login">Grįžti į prisijungimą</Link>.</p>

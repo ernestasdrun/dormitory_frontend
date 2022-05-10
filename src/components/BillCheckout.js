@@ -3,7 +3,7 @@ import {PaymentElement, useStripe, useElements} from "@stripe/react-stripe-js";
 
 import '../App.css'
 
-export const CheckoutForm = (props) => {
+export const BillCheckout = (props) => {
   const stripe = useStripe();
   const elements = useElements();
 
@@ -57,50 +57,21 @@ export const CheckoutForm = (props) => {
       confirmParams: {
         // Make sure to change this to your payment completion page
         return_url: "if_required"
-        //"if_required","http://localhost:3000/reservList"
+        //"if_required", "http://localhost:3000/bills"
       },
     }).then(function(result) {
-      updateDepositData();
+      updatePaymentData();
     });
 
 
 
-    function updateDepositData() {
+    function updatePaymentData() {
 
-      fetch(`http://localhost:5000/users/updateById/${props.user_id}`, {
+
+      fetch(`http://localhost:5000/bills/update`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ room_id: props.room_id }),
-      })
-        .then((res) => res.json())
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-
-      fetch(`http://localhost:5000/rooms/updateCountById/${props.room_id}`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ residents: 1 }),
-      })
-        .then((res) => res.json())
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-
-      fetch(`http://localhost:5000/reservations/update`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ _id: props.res_id, status: "Apgyvendinimas" }),
-      })
-        .then((res) => res.json())
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-
-      fetch(`http://localhost:5000/bills/createDeposit`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ amount: props.amount, type: "deposit", user_id: props.user_id }),
+        body: JSON.stringify({ isPaid: true, _id: props._id }),
       })
         .then((res) => res.json())
         .catch((error) => {

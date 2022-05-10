@@ -12,10 +12,16 @@ import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
 
 import '../../App.css'
 
 export default function ReservationPage() {
+
+    const [openNotification, setOpenNotification] = useState(false);
 
     const Item = styled(Paper)(({ theme }) => ({
         backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
@@ -168,7 +174,10 @@ export default function ReservationPage() {
                 body: json,
               })
               .then(reservationInfo => {
-                console.log("Success:", reservationInfo);
+                console.log("Success:", reservationInfo.status);
+                if (reservationInfo.status == 200) {
+                    setOpenNotification(true);
+                }
               })
               .catch((error) => {
                 console.error("Error:", error);
@@ -296,6 +305,25 @@ export default function ReservationPage() {
                     </Grid>
                     <p></p>
                     <Button variant="contained" type="submit">Rezervuoti</Button>
+                    <Collapse in={openNotification}>
+                        <Alert
+                            action={
+                            <IconButton
+                            aria-label="close"
+                            color="inherit"
+                            size="small"
+                            onClick={() => {
+                            setOpenNotification(false);
+                            }}
+                            >
+                            <CloseIcon fontSize="inherit" />
+                            </IconButton>
+                        }
+                        sx={{ mb: 2 }}
+                        >
+                        Rezervacija sėkminga.
+                        </Alert>
+                    </Collapse>
                     </form>
                 </div>
             )
