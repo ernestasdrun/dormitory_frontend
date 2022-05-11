@@ -504,7 +504,6 @@ import '../../App.css'
               />
             </Paper>
           </Box>
-          <button onClick={() => {console.log(resListInfo)}}>test</button>
           </div>
         );
       } else {
@@ -575,7 +574,6 @@ import '../../App.css'
               />
             </Paper>
           </Box>
-          <button onClick={() => {console.log(fileArrayBuffer)}}>test</button>
           </div>
         );
       }

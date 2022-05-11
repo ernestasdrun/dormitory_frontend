@@ -64,7 +64,7 @@ export default function LoginPage() {
                 localStorage.setItem('user', loginInfo.userName);
                 localStorage.setItem('pass', loginInfo.password);
                 localStorage.setItem('userType', loginInfo.userType);
-                navigate('/home');
+                navigate('/reservations');
               }
             })
           .catch((error) => {

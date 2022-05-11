@@ -499,7 +499,7 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
               />
             </Paper>
             <Dialog open={open} onClose={handleClose}>
-              <h4>Mokėtina suma: {Number(10).toFixed(2)} Eur</h4>
+              <h4>Mokėtina suma: {Number(selectedInfo.totalAmount).toFixed(2)} Eur</h4>
               {clientSecret && (
               <Elements options={options} stripe={stripePromise}>
                 <BillCheckout user_id={selectedInfo.user_id} _id={selectedInfo._id} totalAmount={selectedInfo.totalAmount}/>
