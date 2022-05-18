@@ -1,6 +1,9 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { ResponsiveAppBar } from '../ResponsiveAppBar';
+import Chip from '@mui/material/Chip';
+import MaterialTable from "material-table";
+import tableIcons from "../MaterialTableIcons";
 
 import '../../App.css'
 

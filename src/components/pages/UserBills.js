@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { ResponsiveAppBar } from '../ResponsiveAppBar';
 import { AppBarEmployee } from '../AppBarEmployee';
-import { Link } from 'react-router-dom'
 import { BillCheckout } from '../BillCheckout';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
@@ -12,7 +11,6 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
@@ -23,22 +21,11 @@ import Tooltip from '@mui/material/Tooltip';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import Stack from '@mui/material/Stack';
-import { styled } from '@mui/material/styles';
-import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
-import BorderColorIcon from '@mui/icons-material/BorderColor';
 import EuroIcon from '@mui/icons-material/Euro';
-import { CheckoutForm } from '../CheckoutForm';
+import Chip from '@mui/material/Chip';
+import MaterialTable from "material-table";
+import tableIcons from "../MaterialTableIcons";
 
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
@@ -84,8 +71,11 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
         .then(response => {
             return response.json()})
         .then(resListInform => {
-          for (var index = 0; index <  resListInform.length; index++) {
-            setResData(resListInform[index]);
+          for (var i = 0; i <  resListInform.length; i++) {
+            
+            for (var index = 0; index <  resListInform[i].result.length; index++) {
+              setResData([resListInform[i].roomNumber, resListInform[i].dormAddress, resListInform[i].user, resListInform[i].result[index]]);
+            }
           }
         })
         .catch((error) => {
@@ -112,7 +102,7 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
       }
     }, [resListInfo]);
 
-    function createData(number, user_id, userName, userSurname, _id, dormAddress, roomNumber, dateCreated, deadlineDate, totalAmount, isPaid) {
+    function createData(number, user_id, userName, userSurname, _id, dormAddress, roomNumber, dateCreated, deadlineDate, totalAmount, isPaid, fees) {
         return {
           number,
           user_id,
@@ -124,15 +114,17 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
           dateCreated,
           deadlineDate,
           totalAmount,
-          isPaid
+          isPaid,
+          fees
         };
       }
       
       function createDataTable() {
         for (var index = resListInfo.length - 1; index >= 0; index--) {
+          console.log(resListInfo[index][3].fees);
             let date = new Date(resListInfo[index][3].dateCreated);
             let dateLast = new Date(resListInfo[index][3].deadlineDate);
-            setTableData(createData(index, resListInfo[index][3].user_id, resListInfo[index][2][0].firstName, resListInfo[index][2][0].surname, resListInfo[index][3]._id, resListInfo[index][1], resListInfo[index][0], date.toISOString().split('T')[0], dateLast.toISOString().split('T')[0], resListInfo[index][3].totalAmount, resListInfo[index][3].isPaid));
+            setTableData(createData(index, resListInfo[index][3].user_id, resListInfo[index][2][0].firstName, resListInfo[index][2][0].surname, resListInfo[index][3]._id, resListInfo[index][1], resListInfo[index][0], date.toISOString().split('T')[0], dateLast.toISOString().split('T')[0], resListInfo[index][3].totalAmount, resListInfo[index][3].isPaid, resListInfo[index][3].fees));
         }
       }
 
@@ -144,16 +136,7 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
         isPaid: ""
     }); 
   
-    function SetSelectedInfoData(event) {
-      setSelectedInfo(prevFormData =>  {
-          return {
-              ...prevFormData,
-              [event.target.name]: event.target.value
-          }
-      })
-  }
-  
-    function SetSelectedData(event, user_id, _id, totalAmount, isPaid) {
+    function SetSelectedData(user_id, _id, totalAmount, isPaid) {
         setSelectedInfo(prevFormData =>  {
             return {
               user_id: user_id,
@@ -178,26 +161,6 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
           return 1;
         }
         return 0;
-      }
-      
-      function getComparator(order, orderBy) {
-        return order === 'desc'
-          ? (a, b) => descendingComparator(a, b, orderBy)
-          : (a, b) => -descendingComparator(a, b, orderBy);
-      }
-      
-      // This method is created for cross-browser compatibility, if you don't
-      // need to support IE11, you can use Array.prototype.sort() directly
-      function stableSort(array, comparator) {
-        const stabilizedThis = array.map((el, index) => [el, index]);
-        stabilizedThis.sort((a, b) => {
-          const order = comparator(a[0], b[0]);
-          if (order !== 0) {
-            return order;
-          }
-          return a[1] - b[1];
-        });
-        return stabilizedThis.map((el) => el[0]);
       }
       
       const headCells = [
@@ -340,45 +303,8 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
         numSelected: PropTypes.number.isRequired,
       };
 
-
-
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('surname');
-    const [selected, setSelected] = React.useState([]);
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(20);
-  
-    const handleRequestSort = (event, property) => {
-      const isAsc = orderBy === property && order === 'asc';
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(property);
-    };
-  
-    const handleSelectAllClick = (event) => {
-      if (event.target.checked) {
-        const newSelecteds = rows.map((n) => n.number);
-        setSelected(newSelecteds);
-        return;
-      }
-      setSelected([]);
-    };
-
-    const handleClick = (event, number) => {
-
-      console.log("kambarys: " + selectedInfo.room_id);
-      fetch(`http://localhost:5000/rooms/getRoom/${selectedInfo.room_id}`, {
-          method: "GET"
-        })
-        .then(response => {
-            return response.json()})
-        .then(roomInform => {
-          //setRoomData(roomInform[0]);
-        })
-        .catch((error) => {
-          console.error("Error:", error);
-        });
-    };
-
 
     useEffect(() => {
       console.log("selected: " + selectedInfo.totalAmount);
@@ -394,108 +320,73 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
             setAmount(data.amount);
             console.log("data: " + data.amount);});
         setOpen(true);
-        //handleClick();
       }
     }, [selectedInfo.totalAmount]);
 
-    const handleClickOpen = () => {
-      setOpen(true);
-    };
-  
     const handleClose = () => {
       setOpen(false);
     };
 
-
     const [open, setOpen] = useState(false);
-
-
-    const handleChangePage = (event, newPage) => {
-      setPage(newPage);
-    };
-  
-    const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(0);
-    };
-  
-    const isSelected = (number) => selected.indexOf(number) !== -1;
-  
-    // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows =
-      page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
       if (localStorage.getItem('userType') == 10) {
         return (
           <div className="text-center m-0">
-          <AppBarEmployee />
+          <ResponsiveAppBar />
           <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '70%', mb: 2, position: 'absolute', top: 130, left: 375, right: 0, justifyContent: 'center', alignItems: 'center' }}>
-              <EnhancedTableToolbar numSelected={selected.length} />
-              <TableContainer>
-                <Table
-                  sx={{ minWidth: 350 }}
-                  aria-labelledby="tableTitle"
-                  size={'small'}
-                >
-                  <EnhancedTableHead
-                    numSelected={selected.length}
-                    order={order}
-                    orderBy={orderBy}
-                    onSelectAllClick={handleSelectAllClick}
-                    onRequestSort={handleRequestSort}
-                    rowCount={rows.length}
-                  />
-                  <TableBody>
-                    {stableSort(rows, getComparator(order, orderBy))
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((row, index) => {
-                        const isItemSelected = isSelected(row.name);
-                        const labelId = `enhanced-table-checkbox-${index}`;
-      
-                        return (
+              <MaterialTable
+                icons={tableIcons}
+                columns={[
+                { title: "Nr.", align: "left", type: "numeric", field: "number", filtering: false, hidden: true },
+                { title: "Vardas", align: "left", field: "userName" },
+                { title: "Pavardė", align: "left", field: "userSurname" },
+                { title: "Bendrabutis", align: "left", field: "dormAddress" },
+                { title: "Kambarys", align: "left", field: "roomNumber" },
+                { title: "Sąskaitos data", align: "left", field: "dateCreated", defaultSort: "desc" },
+                { title: "Sumokėti iki", align: "left", field: "deadlineDate" },
+                { title: "Iš viso (Eur)", align: "left", field: "totalAmount", type: "currency", currencySetting:{ locale: "lt", currencyCode:'EUR', minimumFractionDigits:2, maximumFractionDigits:2} },
+                { title: "Būsena", type: "boolean", align: "left", field: "isPaid", lookup: { true: 'Sumokėta', false: 'Nesumokėta' }, render: rowData =>  <Chip color={rowData.isPaid ? "success" : "error"} label={rowData.isPaid ? "Sumokėta" : "Nesumokėta"}/> },
+                { title: "Mokėjimas", align: "left", export: false, searchable: false, field: "isPaid", filtering: false, render: rowData => <Button variant="contained" style={{display: rowData.isPaid ? 'none' : 'block' }} endIcon={<EuroIcon />} onClick={() => {SetSelectedData(rowData.user_id, rowData._id, rowData.totalAmount, rowData.isPaid)}}>Sumokėti</Button> },
+                ]}
+                data={rows}
+                title="Turimos sąskaitos"
+                options={{
+                  search: true,
+                  sorting: true,
+                  filtering: true,
+                  exportButton: true,
+                  pageSizeOptions: [20, 50, 100],
+                  pageSize: 20,
+                  exportFileName: "Dokumentai",
+                  showEmptyDataSourceMessage: "Duomenų nėra",
+                  padding: "dense"
+                }}
+                detailPanel={rowData => {
+                  return (
+                    <TableContainer component={Paper}>
+                    <Table sx={{ maxWidth: 450 }} aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell align="center">Paslauga</TableCell>
+                          <TableCell align="center">Suma (Eur)</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {(rowData.fees).map((fees, index) => (
                           <TableRow
-                            hover
-                            aria-checked={isItemSelected}
-                            tabIndex={-1}
-                            key={row.number}
-                            selected={isItemSelected}
+                            key={index}
                           >
-                            <TableCell
-                              component="th"
-                              id={labelId}
-                              scope="row"
-                              padding="none"
-                            >
-                              {row.number}
-                            </TableCell>
-                            <TableCell align="right" name="userName">{row.userName}</TableCell>
-                            <TableCell align="right" name="userSurname">{row.userSurname}</TableCell>
-                            <TableCell align="right" name="fileName">{row.dormAddress}</TableCell>
-                            <TableCell align="right" name="userSurname">{row.roomNumber}</TableCell>
-                            <TableCell align="right" name="userSurname">{row.dateCreated}</TableCell>
-                            <TableCell align="right" name="userSurname">{row.deadlineDate}</TableCell>
-                            <TableCell align="right" name="userSurname">{row.totalAmount.toFixed(2)}</TableCell>
-                            <TableCell align="right" name="isPaid" bgcolor={row.isPaid ? "#6fd466" : "#e6735c"}>{row.isPaid ? "Sumokėta" : "Nesumokėta"}</TableCell>
-                            <TableCell style={{display: row.isPaid ? 'none' : 'block' }}>
-                              <Button variant="contained" endIcon={<EuroIcon />} onClick={(event) => SetSelectedData(event, row.user_id, row._id, row.totalAmount, row.isPaid)}>
-                                Sumokėti
-                              </Button>
-                            </TableCell>
+                            <TableCell align="center">{fees.description}</TableCell>
+                            <TableCell align="center">{fees.amount.toFixed(2)}</TableCell>
                           </TableRow>
-                        );
-                      })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 20]}
-                component="div"
-                count={rows.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  )
+                }}
+                onRowClick={(event, rowData, togglePanel) => togglePanel()}
               />
             </Paper>
             <Dialog open={open} onClose={handleClose}>
@@ -515,66 +406,58 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
           <AppBarEmployee />
           <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '70%', mb: 2, position: 'absolute', top: 130, left: 375, right: 0, justifyContent: 'center', alignItems: 'center' }}>
-              <EnhancedTableToolbar numSelected={selected.length} />
-              <TableContainer>
-                <Table
-                  sx={{ minWidth: 350 }}
-                  aria-labelledby="tableTitle"
-                  size={'small'}
-                >
-                  <EnhancedTableHead
-                    numSelected={selected.length}
-                    order={order}
-                    orderBy={orderBy}
-                    onSelectAllClick={handleSelectAllClick}
-                    onRequestSort={handleRequestSort}
-                    rowCount={rows.length}
-                  />
-                  <TableBody>
-                    {stableSort(rows, getComparator(order, orderBy))
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((row, index) => {
-                        const isItemSelected = isSelected(row.name);
-                        const labelId = `enhanced-table-checkbox-${index}`;
-      
-                        return (
+              <MaterialTable
+                icons={tableIcons}
+                columns={[
+                { title: "Nr.", align: "left", type: "numeric", field: "number", filtering: false, hidden: true },
+                { title: "Vardas", align: "left", field: "userName" },
+                { title: "Pavardė", align: "left", field: "userSurname" },
+                { title: "Bendrabutis", align: "left", field: "dormAddress" },
+                { title: "Kambarys", align: "left", field: "roomNumber" },
+                { title: "Sąskaitos data", align: "left", field: "dateCreated", defaultSort: "desc" },
+                { title: "Sumokėti iki", align: "left", field: "deadlineDate" },
+                { title: "Iš viso (Eur)", align: "left", field: "totalAmount", type: "currency", currencySetting:{ locale: "lt", currencyCode:'EUR', minimumFractionDigits:2, maximumFractionDigits:2} },
+                { title: "Būsena", type: "boolean", align: "left", field: "isPaid", lookup: { true: 'Sumokėta', false: 'Nesumokėta' }, render: rowData =>  <Chip color={rowData.isPaid ? "success" : "error"} label={rowData.isPaid ? "Sumokėta" : "Nesumokėta"}/> },
+                ]}
+                data={rows}
+                parentChildData={(row, rows) => rows.find(a => a._id === row.parentId)}
+                title="Turimos sąskaitos"
+                options={{
+                  search: true,
+                  sorting: true,
+                  filtering: true,
+                  exportButton: true,
+                  pageSizeOptions: [20, 50, 100],
+                  pageSize: 20,
+                  exportFileName: "Dokumentai",
+                  showEmptyDataSourceMessage: "Duomenų nėra",
+                  padding: "dense"
+                }}
+                detailPanel={rowData => {
+                  return (
+                    <TableContainer component={Paper}>
+                    <Table sx={{ maxWidth: 450 }} aria-label="simple table">
+                      <TableHead>
+                        <TableRow>
+                          <TableCell align="center">Paslauga</TableCell>
+                          <TableCell align="center">Suma (Eur)</TableCell>
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {(rowData.fees).map((fees, index) => (
                           <TableRow
-                            hover
-                            aria-checked={isItemSelected}
-                            tabIndex={-1}
-                            key={row.number}
-                            selected={isItemSelected}
+                            key={index}
                           >
-                            <TableCell
-                              component="th"
-                              id={labelId}
-                              scope="row"
-                              padding="none"
-                            >
-                              {row.number}
-                            </TableCell>
-                            <TableCell align="right" name="userName">{row.userName}</TableCell>
-                            <TableCell align="right" name="userSurname">{row.userSurname}</TableCell>
-                            <TableCell align="right" name="fileName">{row.dormAddress}</TableCell>
-                            <TableCell align="right" name="userSurname">{row.roomNumber}</TableCell>
-                            <TableCell align="right" name="userSurname">{row.dateCreated}</TableCell>
-                            <TableCell align="right" name="userSurname">{row.deadlineDate}</TableCell>
-                            <TableCell align="right" name="userSurname">{row.totalAmount}</TableCell>
-                            <TableCell align="right" name="isSigned" bgcolor={row.isPaid ? "#6fd466" : "#e6735c"}>{row.isPaid ? "Sumokėta" : "Nesumokėta"}</TableCell>
+                            <TableCell align="center">{fees.description}</TableCell>
+                            <TableCell align="center">{fees.amount.toFixed(2)}</TableCell>
                           </TableRow>
-                        );
-                      })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 20]}
-                component="div"
-                count={rows.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </TableContainer>
+                  )
+                }}
+                onRowClick={(event, rowData, togglePanel) => togglePanel()}
               />
             </Paper>
           </Box>

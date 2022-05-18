@@ -16,8 +16,18 @@ import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
+import TextField from '@mui/material/TextField';
+import { lt } from "date-fns/locale";
+import DateFnsUtils from "@date-io/date-fns";
 
 import '../../App.css'
+import { LteMobiledataOutlined } from '@mui/icons-material';
 
 export default function ReservationPage() {
 
@@ -37,13 +47,31 @@ export default function ReservationPage() {
 
     const[isReserved, setReservedInfo] = useState(false); 
 
+    var now = new Date(Date.now());
+    const [dateValue, setDateValue] = useState(new Date(now.getFullYear(), now.getMonth() + 1, 1));
+
+    const handleChange = (newValue) => {
+      setDateValue(newValue);
+      setReservationDateInfo(newValue);
+    };
+
     // save reservation form ingo
     const[reservationInfo, setReservationInfo] = useState({
         dorm: "",
         floor: "",
         maxResidents: "",
-        room: ""
+        room: "",
+        startingDate: dateValue
     }); 
+
+    function setReservationDateInfo(newValue) {
+        setReservationInfo(prevFormData =>  {
+            return {
+                ...prevFormData,
+                ["startingDate"]: newValue
+            }
+        })
+    }
 
     function SetReservationData(event) {
         setReservationInfo(prevFormData =>  {
@@ -152,7 +180,8 @@ export default function ReservationPage() {
             if (data == 1) {
                 setReservedInfo(isReserved => true)
             } else {
-                setReservedInfo(isReserved => false)
+                setReservedInfo(isReserved => false);
+                console.log("data: " + isReserved);
             }
         })
         .catch((error) => {
@@ -185,7 +214,6 @@ export default function ReservationPage() {
         }
 
 
-
         if (isReserved) {
             return (
                 <div className="text-center">
@@ -197,6 +225,7 @@ export default function ReservationPage() {
             return (
                 <div className="text-center">
                     <ResponsiveAppBar />
+                    <Button onClick={() => console.log(reservationInfo.startingDate)}>TEST</Button>
                     <form onSubmit={handleSubmit}>
                     <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
                         <Grid item xs={4}>
@@ -300,7 +329,32 @@ export default function ReservationPage() {
                             </Box>
                         </Grid>
                         <Grid item xs={8}>
-                            <Item>17</Item>
+                            <Item>20</Item>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <label>Pasirinkite norimą nuomos pradžios datą</label>
+                        </Grid>
+                        <Grid item xs={8}></Grid>
+                        <Grid item xs={4}>
+                            <Box sx={{ minWidth: 100, maxWidth: 160 }}>
+                                <FormControl fullWidth>
+                                <LocalizationProvider locale={lt} dateAdapter={AdapterDateFns}>
+                                    <DesktopDatePicker
+                                        id="demo-simple-select"
+                                        label="Pradžios data"
+                                        inputFormat="yyyy-MM-dd"
+                                        name="startingDate"
+                                        value={dateValue}
+                                        minDate={new Date(now.getFullYear(), now.getMonth() + 1, 1)}
+                                        onChange={handleChange}
+                                        renderInput={(params) => <TextField {...params} />}
+                                    />
+                                    </LocalizationProvider>
+                                </FormControl>
+                            </Box>
+                        </Grid>
+                        <Grid item xs={8}>
+                            <Item>19</Item>
                         </Grid>
                     </Grid>
                     <p></p>

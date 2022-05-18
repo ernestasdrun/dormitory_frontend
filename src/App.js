@@ -3,7 +3,6 @@ import { BrowserRouter as Router, Routes, Route, Navigate} from 'react-router-do
 
 import NotExisting from './components/pages/NotExisting'
 import LoginPage from './components/pages/LoginPage'
-import EmployeeLoginPage from './components/pages/EmployeeLoginPage'
 import RegisterPage from './components/pages/RegisterPage'
 import ForgetPasswordPage from './components/pages/ForgetPasswordPage'
 import CustomerHomePage from './components/pages/CustomerHomePage'
@@ -25,7 +24,6 @@ export default function App() {
                 <Routes>
                     <Route exact path="/" element={<Navigate to="/login" />} />
                     <Route path="/login" element={<LoginPage />} />
-                    <Route path="/login_employees" element={<EmployeeLoginPage />} />
                     <Route path="/register" element={<RegisterPage />} />
                     <Route path="/forget-password" element={<ForgetPasswordPage />} />
                     <Route path="/home" element={<CustomerHomePage />} />
@@ -46,7 +44,6 @@ export default function App() {
             <Routes>
                 <Route exact path="/" element={<Navigate to="/login" />} />
                 <Route path="/login" element={<LoginPage />} />
-                <Route path="/login_employees" element={<EmployeeLoginPage />} />
                 <Route path="/register" element={<RegisterPage />} />
                 <Route path="/forget-password" element={<ForgetPasswordPage />} />
                 <Route path="/home" element={<CustomerHomePage />} />

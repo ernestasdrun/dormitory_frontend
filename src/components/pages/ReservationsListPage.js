@@ -42,6 +42,15 @@ import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchBar from "material-ui-search-bar";
+import Chip from '@mui/material/Chip';
+import MaterialTable from "material-table";
+import tableIcons from "../MaterialTableIcons";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { TimePicker } from '@mui/x-date-pickers/TimePicker';
+import { DateTimePicker } from '@mui/x-date-pickers/DateTimePicker';
+import { DesktopDatePicker } from '@mui/x-date-pickers/DesktopDatePicker';
+import { MobileDatePicker } from '@mui/x-date-pickers/MobileDatePicker';
 
 import { loadStripe } from "@stripe/stripe-js";
 import { Elements } from "@stripe/react-stripe-js";
@@ -459,7 +468,7 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
     })
 }
 
-  function SetSelectedData(event, user_id, room_id, _id, firstName, surname, dorm, room, floor, status) {
+  function SetSelectedData(user_id, room_id, _id, firstName, surname, dorm, room, floor, status) {
       setSelectedInfo(prevFormData =>  {
           return {
             user_id: user_id,
@@ -634,6 +643,34 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
+              <MaterialTable
+                icons={tableIcons}
+                columns={[
+                { title: "Nr.", align: "left", type: "numeric", field: "number", filtering: false, hidden: true },
+                { title: "Vardas", align: "left", field: "firstName" },
+                { title: "Pavardė", align: "left", field: "surname" },
+                { title: "Bendrabutis", align: "left", field: "dorm" },
+                { title: "Kambarys", align: "left", field: "room" },
+                { title: "Aukštas", align: "left", field: "floor" },
+                { title: "Sukūrimo data", align: "left", field: "dateUploaded", defaultSort: "desc", type: "date" },
+                { title: "Būsena", align: "left", field: "status" },
+                { title: "", align: "left",  export: false, filtering: false, field: "status", render: rowData => <Button style={{display: rowData.status == "Laukiama depozito" ? 'block' : 'none' }} variant="contained" endIcon={<EuroIcon />} onClick={() => SetSelectedData(rowData.user_id, rowData.room_id, rowData._id, rowData.firstName, rowData.surname, rowData.dorm, rowData.room, rowData.floor, rowData.status)}>Sumokėti depozitą</Button> },
+                { title: "", align: "center", export: false, filtering: false, render: rowData => <IconButton style={{display: rowData.status == "Nepatvirtinta" ? 'block' : 'none' }} aria-label="view" size="large" onClick={(event) => cancelReservation(rowData._id)}><CancelIcon /></IconButton>, filtering: false }
+                ]}
+                data={rows}
+                title="Sukurtos rezervacijos"
+                options={{
+                  search: true,
+                  sorting: true,
+                  filtering: true,
+                  exportButton: true,
+                  pageSizeOptions: [20, 50, 100],
+                  pageSize: 20,
+                  exportFileName: "Dokumentai",
+                  showEmptyDataSourceMessage: "Duomenų nėra",
+                  padding: "dense"
+                }}
+              />
           </Paper>
         </Box>
         <Dialog open={open} onClose={handleClose}>
@@ -652,71 +689,33 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
         <AppBarEmployee />
         <Box sx={{ width: '100%' }}>
           <Paper sx={{ width: '70%', mb: 2, position: 'absolute', top: 130, left: 375, right: 0, justifyContent: 'center', alignItems: 'center' }}>
-            <EnhancedTableToolbar numSelected={selected.length} />
-            <TableContainer>
-              <Table
-                sx={{ minWidth: 350 }}
-                aria-labelledby="tableTitle"
-                size={'small'}
-              >
-                <EnhancedTableHead
-                  numSelected={selected.length}
-                  order={order}
-                  orderBy={orderBy}
-                  onSelectAllClick={handleSelectAllClick}
-                  onRequestSort={handleRequestSort}
-                  rowCount={rows.length}
-                />
-                <TableBody>
-                  {stableSort(rows, getComparator(order, orderBy))
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) => {
-                      const isItemSelected = isSelected(row.name);
-                      const labelId = `enhanced-table-checkbox-${index}`;
-    
-                      return (
-                        <TableRow
-                          hover
-                          
-                          aria-checked={isItemSelected}
-                          tabIndex={-1}
-                          key={row.number}
-                          selected={isItemSelected}
-                        >
-                          <TableCell
-                            component="th"
-                            id={labelId}
-                            scope="row"
-                            padding="none"
-                          >
-                            {row.number}
-                          </TableCell>
-                          <TableCell align="right" name="firstName">{row.firstName}</TableCell>
-                          <TableCell align="right" name="surname">{row.surname}</TableCell>
-                          <TableCell align="right" name="dorm">{row.dorm}</TableCell>
-                          <TableCell align="right" name="room">{row.room}</TableCell>
-                          <TableCell align="right" name="floor">{row.floor}</TableCell>
-                          <TableCell align="right" name="status">{row.status}</TableCell>
-                          <TableCell align="right">
-                            <IconButton aria-label="delete" size="large" onClick={(event) => SetSelectedData(event, row.user_id, row.room_id, row._id, row.firstName, row.surname, row.dorm, row.room, row.floor, row.status)}>
-                              <EditIcon />
-                            </IconButton>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[50, 100, 200]}
-              component="div"
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
+              <MaterialTable
+                icons={tableIcons}
+                columns={[
+                { title: "Nr.", align: "left", type: "numeric", field: "number", filtering: false, hidden: true },
+                { title: "Vardas", align: "left", field: "firstName" },
+                { title: "Pavardė", align: "left", field: "surname" },
+                { title: "Bendrabutis", align: "left", field: "dorm" },
+                { title: "Kambarys", align: "left", field: "room" },
+                { title: "Aukštas", align: "left", field: "floor" },
+                { title: "Sukūrimo data", align: "left", field: "dateUploaded", defaultSort: "desc", type: "date" },
+                { title: "Būsena", align: "left", field: "status" },
+                { title: "Keisti", align: "center", export: false, render: rowData => <IconButton aria-label="view" size="large" onClick={() => SetSelectedData(rowData.user_id, rowData.room_id, rowData._id, rowData.firstName, rowData.surname, rowData.dorm, rowData.room, rowData.floor, rowData.status)}><EditIcon /></IconButton>, filtering: false }
+                ]}
+                data={rows}
+                title="Sukurtos rezervacijos"
+                options={{
+                  search: true,
+                  sorting: true,
+                  filtering: true,
+                  exportButton: true,
+                  pageSizeOptions: [20, 50, 100],
+                  pageSize: 20,
+                  exportFileName: "Dokumentai",
+                  showEmptyDataSourceMessage: "Duomenų nėra",
+                  padding: "dense"
+                }}
+              />
           </Paper>
         </Box>
         <Dialog open={open} onClose={handleClose}>

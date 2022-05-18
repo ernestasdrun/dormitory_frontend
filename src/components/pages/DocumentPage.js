@@ -2,16 +2,11 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { ResponsiveAppBar } from '../ResponsiveAppBar';
 import { AppBarEmployee } from '../AppBarEmployee';
-import { Link } from 'react-router-dom'
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
-import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
@@ -21,21 +16,13 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
 import RemoveRedEyeIcon from '@mui/icons-material/RemoveRedEye';
 import BorderColorIcon from '@mui/icons-material/BorderColor';
+import Chip from '@mui/material/Chip';
+import MaterialTable from "material-table";
+import tableIcons from "../MaterialTableIcons";
 
 import '../../App.css'
 
@@ -53,19 +40,6 @@ import '../../App.css'
     function setArrayBufferData(newElement) {
       setFileArrayBuffer(newElement);
   }
-
-    const[userFileInfo, setUserFileInfo] = useState({
-      user_id: "",
-      room_id: "",
-      userName: "",
-      userSurname: "",
-      _id: "",
-      firstName: "",
-      surname: "",
-      status: ""
-  }); 
-
-    const statusAll = ['Nepasirašyta', 'Pasirašyta']
     
     useEffect(() => {
       if (localStorage.getItem('userType') == 10) {
@@ -119,7 +93,7 @@ import '../../App.css'
       }
     }, [resListInfo]);
 
-    function createData(number, user_id, reservation_id, _id, userName, userSurname, fileName, isSigned) {
+    function createData(number, user_id, reservation_id, _id, userName, userSurname, fileName, isSigned, dateUploaded) {
         return {
           user_id,
           reservation_id,
@@ -129,12 +103,17 @@ import '../../App.css'
           userSurname,
           fileName,
           isSigned,
+          dateUploaded
         };
       }
       
       function createDataTable() {
         for (var index = 0; index <  resListInfo.length; index++) {
-          setTableData(createData(index, resListInfo[index].user_id, resListInfo[index].reservation_id, resListInfo[index]._id, resListInfo[index].userName, resListInfo[index].userSurname, resListInfo[index].fileName, resListInfo[index].isSigned));
+          let date = new Date(resListInfo[index].dateUploaded);
+          // DELETE IF STATEMENT AND ELSE AFTER TEST VALUES ARE DELETED FROM DB
+          if (resListInfo[index].dateUploaded != null && resListInfo[index].dateUploaded != undefined && resListInfo[index].dateUploaded != "")
+          setTableData(createData(index, resListInfo[index].user_id, resListInfo[index].reservation_id, resListInfo[index]._id, resListInfo[index].userName, resListInfo[index].userSurname, resListInfo[index].fileName, resListInfo[index].isSigned, date.toISOString().split('T')[0]));
+          else setTableData(createData(index, resListInfo[index].user_id, resListInfo[index].reservation_id, resListInfo[index]._id, resListInfo[index].userName, resListInfo[index].userSurname, resListInfo[index].fileName, resListInfo[index].isSigned, resListInfo[index].dateUploaded));
         }
       }
 
@@ -143,35 +122,6 @@ import '../../App.css'
         setTableInfo(rows => [...rows, newElement]);
       }
       
-      function descendingComparator(a, b, orderBy) {
-        if (b[orderBy] < a[orderBy]) {
-          return -1;
-        }
-        if (b[orderBy] > a[orderBy]) {
-          return 1;
-        }
-        return 0;
-      }
-      
-      function getComparator(order, orderBy) {
-        return order === 'desc'
-          ? (a, b) => descendingComparator(a, b, orderBy)
-          : (a, b) => -descendingComparator(a, b, orderBy);
-      }
-      
-      // This method is created for cross-browser compatibility, if you don't
-      // need to support IE11, you can use Array.prototype.sort() directly
-      function stableSort(array, comparator) {
-        const stabilizedThis = array.map((el, index) => [el, index]);
-        stabilizedThis.sort((a, b) => {
-          const order = comparator(a[0], b[0]);
-          if (order !== 0) {
-            return order;
-          }
-          return a[1] - b[1];
-        });
-        return stabilizedThis.map((el) => el[0]);
-      }
       
       const headCells = [
         {
@@ -295,45 +245,6 @@ import '../../App.css'
         numSelected: PropTypes.number.isRequired,
       };
 
-
-
-    const [order, setOrder] = React.useState('asc');
-    const [orderBy, setOrderBy] = React.useState('surname');
-    const [selected, setSelected] = React.useState([]);
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(20);
-  
-    const handleRequestSort = (event, property) => {
-      const isAsc = orderBy === property && order === 'asc';
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(property);
-    };
-  
-    const handleSelectAllClick = (event) => {
-      if (event.target.checked) {
-        const newSelecteds = rows.map((n) => n.number);
-        setSelected(newSelecteds);
-        return;
-      }
-      setSelected([]);
-    };
-
-
-    const [open, setOpen] = React.useState(false);
-
-    const handleClickOpen = () => {
-      setOpen(true);
-    };
-  
-    const handleClose = () => {
-      setOpen(false);
-    };
-
-    const handleSubmit = () => {
-
-    }
-
-
     const showFile = async (id) => {
       await axios
       .get(`http://localhost:5000/documents/getFullFile/${id}`, {
@@ -398,6 +309,7 @@ import '../../App.css'
       if (fileArrayBuffer != "") {
         console.log(resListInfo);
         const file = new Blob([fileArrayBuffer], { type: "application/pdf" });
+        console.log(fileArrayBuffer);
         //Build a URL from the file
         const fileURL = URL.createObjectURL(file);
         //Open the URL on new Window
@@ -405,102 +317,38 @@ import '../../App.css'
       }
     }, [fileArrayBuffer]);
 
-  const changeHandler = (event) => {
-    setSelectedFile(event.target.files[0]);
-    setIsFilePicked(true);
-  };
-
-  
-    const handleClick = (event, number) => {
-      setOpen(true);
-
-    };
-  
-    const handleChangePage = (event, newPage) => {
-      setPage(newPage);
-    };
-  
-    const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(0);
-    };
-  
-    const isSelected = (number) => selected.indexOf(number) !== -1;
-  
-    // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows =
-      page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
 
       if (localStorage.getItem('userType') == 10) {
         return (
           <div className="text-center m-0">
-          <AppBarEmployee />
+          <ResponsiveAppBar />
           <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '70%', mb: 2, position: 'absolute', top: 130, left: 375, right: 0, justifyContent: 'center', alignItems: 'center' }}>
-              <EnhancedTableToolbar numSelected={selected.length} />
-              <TableContainer>
-                <Table
-                  sx={{ minWidth: 350 }}
-                  aria-labelledby="tableTitle"
-                  size={'small'}
-                >
-                  <EnhancedTableHead
-                    numSelected={selected.length}
-                    order={order}
-                    orderBy={orderBy}
-                    onSelectAllClick={handleSelectAllClick}
-                    onRequestSort={handleRequestSort}
-                    rowCount={rows.length}
-                  />
-                  <TableBody>
-                    {stableSort(rows, getComparator(order, orderBy))
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((row, index) => {
-                        const isItemSelected = isSelected(row.name);
-                        const labelId = `enhanced-table-checkbox-${index}`;
-      
-                        return (
-                          <TableRow
-                            hover
-                            aria-checked={isItemSelected}
-                            tabIndex={-1}
-                            key={row.number}
-                            selected={isItemSelected}
-                          >
-                            <IconButton aria-label="view" size="large" onClick={() => showFile(row._id)}>
-                              <RemoveRedEyeIcon />
-                            </IconButton>
-                            <TableCell
-                              component="th"
-                              id={labelId}
-                              scope="row"
-                              padding="none"
-                            >
-                              {row.number}
-                            </TableCell>
-                            <TableCell align="right" name="userName">{row.userName}</TableCell>
-                            <TableCell align="right" name="userSurname">{row.userSurname}</TableCell>
-                            <TableCell align="right" name="fileName">{row.fileName}</TableCell>
-                            <TableCell align="right" name="isSigned" bgcolor={row.isSigned ? "#6fd466" : "#e6735c"}>{row.isSigned ? "Pasirašyta" : "Nepasirašyta"}</TableCell>
-                            <TableCell style={{display: row.isSigned ? 'none' : 'block' }}>
-                              <Button variant="contained" endIcon={<BorderColorIcon />} onClick={() => {submitSigning(row._id, row.reservation_id)}}>
-                                Pasirašyti
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        );
-                      })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 20]}
-                component="div"
-                count={rows.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
+              <MaterialTable
+                icons={tableIcons}
+                columns={[
+                { title: "Peržiūrėti", align: "center", export: false, render: rowData => <IconButton aria-label="view" size="large" onClick={() => showFile(rowData._id)}><RemoveRedEyeIcon /></IconButton>, filtering: false },
+                { title: "Nr.", align: "left", type: "numeric", field: "number", filtering: false, hidden: true },
+                { title: "Vardas", align: "left", field: "userName" },
+                { title: "Pavardė", align: "left", field: "userSurname" },
+                { title: "Dokumentas", align: "left", field: "fileName" },
+                { title: "Įkėlimo data", align: "left", field: "dateUploaded", defaultSort: "desc", type: "date" },
+                { title: "Būsena", type: "boolean", align: "left", field: "isSigned", lookup: { true: 'Pasirašyta', false: 'Nepasirašyta' }, render: rowData =>  <Chip color={rowData.isSigned ? "success" : "error"} label={rowData.isSigned ? "Pasirašyta" : "Nepasirašyta"}/> },
+                { title: "Pasirašyti", align: "left", export: false, searchable: false, field: "isSigned", filtering: false, render: rowData => <Button variant="contained" style={{display: rowData.isSigned ? 'none' : 'block' }} endIcon={<BorderColorIcon />} onClick={() => {submitSigning(rowData._id, rowData.reservation_id)}}>Pasirašyti</Button> },
+                ]}
+                data={rows}
+                title="Įkelti dokumentai"
+                options={{
+                  search: true,
+                  sorting: true,
+                  filtering: true,
+                  exportButton: true,
+                  pageSizeOptions: [20, 50, 100],
+                  pageSize: 20,
+                  exportFileName: "Dokumentai",
+                  showEmptyDataSourceMessage: "Duomenų nėra",
+                  padding: "dense"
+                }}
               />
             </Paper>
           </Box>
@@ -512,65 +360,19 @@ import '../../App.css'
           <AppBarEmployee />
           <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '70%', mb: 2, position: 'absolute', top: 130, left: 375, right: 0, justifyContent: 'center', alignItems: 'center' }}>
-              <EnhancedTableToolbar numSelected={selected.length} />
-              <TableContainer>
-                <Table
-                  sx={{ minWidth: 350 }}
-                  aria-labelledby="tableTitle"
-                  size={'small'}
-                >
-                  <EnhancedTableHead
-                    numSelected={selected.length}
-                    order={order}
-                    orderBy={orderBy}
-                    onSelectAllClick={handleSelectAllClick}
-                    onRequestSort={handleRequestSort}
-                    rowCount={rows.length}
-                  />
-                  <TableBody>
-                    {stableSort(rows, getComparator(order, orderBy))
-                      .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                      .map((row, index) => {
-                        const isItemSelected = isSelected(row.name);
-                        const labelId = `enhanced-table-checkbox-${index}`;
-      
-                        return (
-                          <TableRow
-                            hover
-                            aria-checked={isItemSelected}
-                            tabIndex={-1}
-                            key={row.number}
-                            selected={isItemSelected}
-                          >
-                            <IconButton aria-label="view" size="large" onClick={() => showFile(row._id)}>
-                              <RemoveRedEyeIcon />
-                            </IconButton>
-                            <TableCell
-                              component="th"
-                              id={labelId}
-                              scope="row"
-                              padding="none"
-                            >
-                              {row.number}
-                            </TableCell>
-                            <TableCell align="right" name="userName">{row.userName}</TableCell>
-                            <TableCell align="right" name="userSurname">{row.userSurname}</TableCell>
-                            <TableCell align="right" name="fileName">{row.fileName}</TableCell>
-                            <TableCell align="right" name="isSigned" bgcolor={row.isSigned ? "#6fd466" : "#e6735c"}>{row.isSigned ? "Pasirašyta" : "Nepasirašyta"}</TableCell>
-                          </TableRow>
-                        );
-                      })}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-              <TablePagination
-                rowsPerPageOptions={[5, 10, 20]}
-                component="div"
-                count={rows.length}
-                rowsPerPage={rowsPerPage}
-                page={page}
-                onPageChange={handleChangePage}
-                onRowsPerPageChange={handleChangeRowsPerPage}
+              <MaterialTable
+                icons={tableIcons}
+                columns={[
+                { title: "Peržiūrėti", align: "center", export: false, render: rowData => <IconButton aria-label="view" size="large" onClick={() => showFile(rowData._id)}><RemoveRedEyeIcon /></IconButton>, filtering: false },
+                { title: "Nr.", align: "left", type: "numeric", field: "number", filtering: false, hidden: true },
+                { title: "Vardas", align: "left", field: "userName" },
+                { title: "Pavardė", align: "left", field: "userSurname" },
+                { title: "Dokumentas", align: "left", field: "fileName" },
+                { title: "Įkėlimo data", align: "left", field: "dateUploaded", defaultSort: "desc" },
+                { title: "Būsena", type: "boolean", align: "left", field: "isSigned", lookup: { true: 'Pasirašyta', false: 'Nepasirašyta' }, render: rowData =>  <Chip color={rowData.isSigned ? "success" : "error"} label={rowData.isSigned ? "Pasirašyta" : "Nepasirašyta"}/> },
+                ]}
+                data={rows}
+                title="Įkelti dokumentai"
               />
             </Paper>
           </Box>
