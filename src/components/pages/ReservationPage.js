@@ -49,11 +49,17 @@ export default function ReservationPage() {
 
     var now = new Date(Date.now());
     const [dateValue, setDateValue] = useState(new Date(now.getFullYear(), now.getMonth() + 1, 1));
+    const [endDateValue, setEndDateValue] = useState(new Date(now.getFullYear() + 1, now.getMonth(), new Date(now.getFullYear() + 1, now.getMonth() + 1, 0).getDate()));
 
     const handleChange = (newValue) => {
       setDateValue(newValue);
       setReservationDateInfo(newValue);
     };
+
+    const handleEndChange = (newValue) => {
+        setEndDateValue(newValue);
+        setReservationEndDateInfo(newValue);
+      };
 
     // save reservation form ingo
     const[reservationInfo, setReservationInfo] = useState({
@@ -61,7 +67,8 @@ export default function ReservationPage() {
         floor: "",
         maxResidents: "",
         room: "",
-        startingDate: dateValue
+        startingDate: dateValue,
+        endDate: ""
     }); 
 
     function setReservationDateInfo(newValue) {
@@ -69,6 +76,15 @@ export default function ReservationPage() {
             return {
                 ...prevFormData,
                 ["startingDate"]: newValue
+            }
+        })
+    }
+
+    function setReservationEndDateInfo(newValue) {
+        setReservationInfo(prevFormData =>  {
+            return {
+                ...prevFormData,
+                ["endDate"]: newValue
             }
         })
     }
@@ -148,7 +164,6 @@ export default function ReservationPage() {
 
         //Get rooms after floor and type is selected
         useEffect(() => {
-            console.log("Test: " + reservationInfo.maxResidents);
             fetch(`http://localhost:5000/rooms/get/${reservationInfo.dorm}/${reservationInfo.floor}/${reservationInfo.maxResidents}`, {
                 method: "GET"
               })
@@ -225,7 +240,6 @@ export default function ReservationPage() {
             return (
                 <div className="text-center">
                     <ResponsiveAppBar />
-                    <Button onClick={() => console.log(reservationInfo.startingDate)}>TEST</Button>
                     <form onSubmit={handleSubmit}>
                     <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
                         <Grid item xs={4}>
@@ -278,7 +292,6 @@ export default function ReservationPage() {
                             </Box>
                         </Grid>
                         <Grid item xs={8}>
-                            <Item>9</Item>
                         </Grid>
                         <Grid item xs={4}>
                             <label>Pasirinkite norimą kambario vietų skaičių</label>
@@ -303,7 +316,6 @@ export default function ReservationPage() {
                             </Box>
                         </Grid>
                         <Grid item xs={8}>
-                            <Item>13</Item>
                         </Grid>
                         <Grid item xs={4}>
                             <label>Pasirinkite norimą kambarį</label>
@@ -329,7 +341,6 @@ export default function ReservationPage() {
                             </Box>
                         </Grid>
                         <Grid item xs={8}>
-                            <Item>20</Item>
                         </Grid>
                         <Grid item xs={4}>
                             <label>Pasirinkite norimą nuomos pradžios datą</label>
@@ -354,7 +365,30 @@ export default function ReservationPage() {
                             </Box>
                         </Grid>
                         <Grid item xs={8}>
-                            <Item>19</Item>
+                        </Grid>
+                        <Grid item xs={4}>
+                            <label>Pasirinkite norimą nuomos pabaigos datą</label>
+                        </Grid>
+                        <Grid item xs={8}></Grid>
+                        <Grid item xs={4}>
+                            <Box sx={{ minWidth: 100, maxWidth: 160 }}>
+                                <FormControl fullWidth>
+                                <LocalizationProvider locale={lt} dateAdapter={AdapterDateFns}>
+                                    <DesktopDatePicker
+                                        id="demo-simple-select"
+                                        label="Pabaigos data"
+                                        inputFormat="yyyy-MM-dd"
+                                        name="endDate"
+                                        value={endDateValue}
+                                        minDate={new Date(now.getFullYear() + 1, now.getMonth(), new Date(now.getFullYear() + 1, now.getMonth() + 1, 0).getDate())}
+                                        onChange={handleEndChange}
+                                        renderInput={(params) => <TextField {...params} />}
+                                    />
+                                    </LocalizationProvider>
+                                </FormControl>
+                            </Box>
+                        </Grid>
+                        <Grid item xs={8}>
                         </Grid>
                     </Grid>
                     <p></p>

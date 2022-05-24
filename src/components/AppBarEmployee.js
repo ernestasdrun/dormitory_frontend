@@ -144,32 +144,13 @@ export const AppBarEmployee = () => {
                 'aria-labelledby': 'reservations-button',
               }}
             >
-              <Link to="/reservations"><MenuItem onClick={handleCloseR} style={{ textDecoration: 'none', color: 'black' }}>Nauja kambario rezervacija</MenuItem></Link>
               <Link to="/reservList"><MenuItem onClick={handleCloseR} style={{ textDecoration: 'none', color: 'black' }}>Vartotojų rezervacijos</MenuItem></Link>
             </Menu>
-            <Button
-              id="failures-button"
-              aria-controls={openF ? 'failures-menu' : undefined}
-              aria-haspopup="true"
-              aria-expanded={openF ? 'true' : undefined}
-              onClick={handleClickF}
-              sx={{ my: 2, color: 'white', display: 'block' }}
-            >
-              Gedimai
-            </Button>
-            <Menu
-              id="failures-menu"
-              anchorEl={anchorElF}
-              open={openF}
-              onClose={handleCloseF}
-              MenuListProps={{
-                'aria-labelledby': 'failures-button',
-              }}
-            >
-               <Link to="/failures"><MenuItem onClick={handleCloseF} style={{ textDecoration: 'none', color: 'black' }}>Registruoti gedimą</MenuItem></Link>
-              <MenuItem onClick={handleCloseF}>Vartotojų užregistruoti gedimai</MenuItem>
-            </Menu>
+            <Link to="/bills"><Button sx={{ my: 2, color: 'white', display: 'block' }}>Vartotojų sąskaitos</Button></Link>
+            <Link to="/failures"><Button sx={{ my: 2, color: 'white', display: 'block' }}>Gedimai</Button></Link>
             <Link to="/documents"><Button sx={{ my: 2, color: 'white', display: 'block' }}>Dokumentai</Button></Link>
+            <Link to="/dorms"><Button sx={{ my: 2, color: 'white', display: 'block' }}>Bendrabučiai</Button></Link>
+            <Link to="/users"><Button sx={{ my: 2, color: 'white', display: 'block' }}>Gyventojai</Button></Link>
           </Box>
 
 
@@ -200,7 +181,6 @@ export const AppBarEmployee = () => {
               onClose={handleCloseUserMenu}
             >
               <Link to="/profile" style={{ textDecoration: 'none', color: 'black' }}><MenuItem>Profilis</MenuItem></Link>
-              <Link to="/bills" style={{ textDecoration: 'none', color: 'black' }}><MenuItem>Sąskaitos</MenuItem></Link>
               <MenuItem onClick={handleLogOut}>Atsijungti</MenuItem>
             </Menu>
           </Box>

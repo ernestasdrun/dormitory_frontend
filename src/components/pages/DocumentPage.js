@@ -23,8 +23,11 @@ import BorderColorIcon from '@mui/icons-material/BorderColor';
 import Chip from '@mui/material/Chip';
 import MaterialTable from "material-table";
 import tableIcons from "../MaterialTableIcons";
+import { lt } from "date-fns/locale";
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 import '../../App.css'
+import { LocalizationProvider } from '@mui/x-date-pickers';
 
   
   export default function DocumentPage() {
@@ -332,7 +335,7 @@ import '../../App.css'
                 { title: "Vardas", align: "left", field: "userName" },
                 { title: "Pavardė", align: "left", field: "userSurname" },
                 { title: "Dokumentas", align: "left", field: "fileName" },
-                { title: "Įkėlimo data", align: "left", field: "dateUploaded", defaultSort: "desc", type: "date" },
+                { title: "Įkėlimo data", align: "left", field: "dateUploaded", defaultSort: "desc", type: "date", dateSetting: {locale: "lt"} },
                 { title: "Būsena", type: "boolean", align: "left", field: "isSigned", lookup: { true: 'Pasirašyta', false: 'Nepasirašyta' }, render: rowData =>  <Chip color={rowData.isSigned ? "success" : "error"} label={rowData.isSigned ? "Pasirašyta" : "Nepasirašyta"}/> },
                 { title: "Pasirašyti", align: "left", export: false, searchable: false, field: "isSigned", filtering: false, render: rowData => <Button variant="contained" style={{display: rowData.isSigned ? 'none' : 'block' }} endIcon={<BorderColorIcon />} onClick={() => {submitSigning(rowData._id, rowData.reservation_id)}}>Pasirašyti</Button> },
                 ]}
@@ -368,7 +371,7 @@ import '../../App.css'
                 { title: "Vardas", align: "left", field: "userName" },
                 { title: "Pavardė", align: "left", field: "userSurname" },
                 { title: "Dokumentas", align: "left", field: "fileName" },
-                { title: "Įkėlimo data", align: "left", field: "dateUploaded", defaultSort: "desc" },
+                { title: "Įkėlimo data", align: "left", field: "dateUploaded", defaultSort: "desc", dateSetting: {locale: "lt"} },
                 { title: "Būsena", type: "boolean", align: "left", field: "isSigned", lookup: { true: 'Pasirašyta', false: 'Nepasirašyta' }, render: rowData =>  <Chip color={rowData.isSigned ? "success" : "error"} label={rowData.isSigned ? "Pasirašyta" : "Nepasirašyta"}/> },
                 ]}
                 data={rows}

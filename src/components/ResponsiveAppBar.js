@@ -17,7 +17,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import '../App.css'
 
 const pages = ['Rezervacijos', 'Dokumentai', 'Gedimai'];
-const settings = ['Profilis', 'Sąskaitos', 'TEST', 'Atsijungti'];
 
 const user = localStorage.getItem('user');
 

@@ -103,6 +103,8 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
       dorm: "",
       room: "",
       floor: "",
+      createdDate: "",
+      startingDate: "",
       status: ""
   }); 
 
@@ -163,7 +165,7 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
       }
     }, [resListInfo]);
 
-    function createData(number, user_id, room_id, _id, firstName, surname, dorm, room, floor, status) {
+    function createData(number, user_id, room_id, _id, firstName, surname, dorm, room, floor, createdDate, startingDate, status) {
         return {
           user_id,
           room_id,
@@ -174,13 +176,15 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
           dorm,
           room,
           floor,
+          createdDate,
+          startingDate,
           status,
         };
       }
       
       function createDataTable() {
         for (var index = 0; index <  resListInfo.length; index++) {
-          setTableData(createData(index, resListInfo[index].user_id, resListInfo[index].room_id, resListInfo[index]._id, resListInfo[index].firstName, resListInfo[index].surname,  resListInfo[index].dormNum,  resListInfo[index].roomNum,  resListInfo[index].floorNum,  resListInfo[index].status));
+          setTableData(createData(index, resListInfo[index].user_id, resListInfo[index].room_id, resListInfo[index]._id, resListInfo[index].firstName, resListInfo[index].surname,  resListInfo[index].dormNum,  resListInfo[index].roomNum,  resListInfo[index].floorNum, resListInfo[index].createdDate, resListInfo[index].startingDate, resListInfo[index].status));
         }
       }
 
@@ -188,190 +192,8 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
       function setTableData(newElement) {
         setTableInfo(rows => [...rows, newElement]);
       }
-      
-      function descendingComparator(a, b, orderBy) {
-        if (b[orderBy] < a[orderBy]) {
-          return -1;
-        }
-        if (b[orderBy] > a[orderBy]) {
-          return 1;
-        }
-        return 0;
-      }
-      
-      function getComparator(order, orderBy) {
-        return order === 'desc'
-          ? (a, b) => descendingComparator(a, b, orderBy)
-          : (a, b) => -descendingComparator(a, b, orderBy);
-      }
-      
-      // This method is created for cross-browser compatibility, if you don't
-      // need to support IE11, you can use Array.prototype.sort() directly
-      function stableSort(array, comparator) {
-        const stabilizedThis = array.map((el, index) => [el, index]);
-        stabilizedThis.sort((a, b) => {
-          const order = comparator(a[0], b[0]);
-          if (order !== 0) {
-            return order;
-          }
-          return a[1] - b[1];
-        });
-        return stabilizedThis.map((el) => el[0]);
-      }
-      
-      const headCells = [
-        {
-          id: 'number',
-          numeric: false,
-          disablePadding: true,
-          label: 'Nr',
-        },
-        {
-          id: 'firstName',
-          numeric: false,
-          disablePadding: true,
-          label: 'Vardas',
-        },
-        {
-          id: 'surname',
-          numeric: true,
-          disablePadding: false,
-          label: 'Pavardė',
-        },
-        {
-          id: 'dorm',
-          numeric: true,
-          disablePadding: false,
-          label: 'Bendrabutis',
-        },
-        {
-          id: 'room',
-          numeric: true,
-          disablePadding: false,
-          label: 'Kambarys',
-        },
-        {
-          id: 'floor',
-          numeric: true,
-          disablePadding: false,
-          label: 'Aukštas',
-        },
-        {
-          id: 'status',
-          numeric: true,
-          disablePadding: false,
-          label: 'Būsena',
-        }
-      ];
-      
-      function EnhancedTableHead(props) {
-        const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
-          props;
-        const createSortHandler = (property) => (event) => {
-          onRequestSort(event, property);
-        };
-      
-        return (
-          <TableHead>
-            <TableRow>
-      
-              {headCells.map((headCell) => (
-                <TableCell
-                  key={headCell.id}
-                  align={headCell.numeric ? 'right' : 'left'}
-                  padding={headCell.disablePadding ? 'none' : 'normal'}
-                  sortDirection={orderBy === headCell.id ? order : false}
-                >
-                  <TableSortLabel
-                    active={orderBy === headCell.id}
-                    direction={orderBy === headCell.id ? order : 'asc'}
-                    onClick={createSortHandler(headCell.id)}
-                  >
-                    {headCell.label}
-                    {orderBy === headCell.id ? (
-                      <Box component="span" sx={visuallyHidden}>
-                        {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                      </Box>
-                    ) : null}
-                  </TableSortLabel>
-                </TableCell>
-              ))}
-            </TableRow>
-          </TableHead>
-        );
-      }
-      
-      EnhancedTableHead.propTypes = {
-        numSelected: PropTypes.number.isRequired,
-        onRequestSort: PropTypes.func.isRequired,
-        onSelectAllClick: PropTypes.func.isRequired,
-        order: PropTypes.oneOf(['asc', 'desc']).isRequired,
-        orderBy: PropTypes.string.isRequired,
-        rowCount: PropTypes.number.isRequired,
-      };
-      
-      const EnhancedTableToolbar = (props) => {
-        const { numSelected } = props;
 
-      
-        return (
-          <Toolbar
-            sx={{
-              pl: { sm: 2 },
-              pr: { xs: 1, sm: 1 },
-              ...(numSelected > 0 && {
-                bgcolor: (theme) =>
-                  alpha(theme.palette.primary.main, theme.palette.action.activatedOpacity),
-              }),
-            }}
-          >
-              <Typography
-                sx={{ flex: '1 1 100%' }}
-                variant="h6"
-                id="tableTitle"
-                component="div"
-              >
-                Rezervacijų sąrašas
-              </Typography>
-
-              <Tooltip title="Filtruoti">
-                <IconButton>
-                  <FilterListIcon />
-                </IconButton>
-              </Tooltip>
-          </Toolbar>
-        );
-      };
-      
-      EnhancedTableToolbar.propTypes = {
-        numSelected: PropTypes.number.isRequired,
-      };
-
-
-
-    const [order, setOrder] = React.useState('asc');
-    const [orderBy, setOrderBy] = React.useState('surname');
-    const [selected, setSelected] = React.useState([]);
-    const [page, setPage] = React.useState(0);
-    const [rowsPerPage, setRowsPerPage] = React.useState(50);
-  
-    const handleRequestSort = (event, property) => {
-      const isAsc = orderBy === property && order === 'asc';
-      setOrder(isAsc ? 'desc' : 'asc');
-      setOrderBy(property);
-    };
-  
-    const handleSelectAllClick = (event) => {
-      if (event.target.checked) {
-        const newSelecteds = rows.map((n) => n.number);
-        setSelected(newSelecteds);
-        return;
-      }
-      setSelected([]);
-    };
-
-
-    const [open, setOpen] = React.useState(false);
+    const [open, setOpen] = useState(false);
 
     const handleClickOpen = () => {
       setOpen(true);
@@ -433,7 +255,6 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
       const formData = new FormData();
       formData.append('file', selectedFile);
       formData.append('fileName', selectedFile.name);
-      console.log("appended: " + formData.get('file'));
       try {
         const res = await axios.post(
           `http://localhost:5000/documents/create/${selectedInfo.user_id}/${selectedInfo._id}`,
@@ -456,6 +277,8 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
       dorm: "",
       room: "",
       floor: "",
+      createdDate: "",
+      startingDate: "",
       status: ""
   }); 
 
@@ -468,7 +291,7 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
     })
 }
 
-  function SetSelectedData(user_id, room_id, _id, firstName, surname, dorm, room, floor, status) {
+  function SetSelectedData(user_id, room_id, _id, firstName, surname, dorm, room, floor, createdDate, startingDate, status) {
       setSelectedInfo(prevFormData =>  {
           return {
             user_id: user_id,
@@ -479,6 +302,8 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
             dorm: dorm,
             room: room,
             floor: floor,
+            createdDate: createdDate,
+            startingDate: startingDate,
             status: status
           }
       })
@@ -531,15 +356,7 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
         setOpen(true);
       }
     }, [roomInfo]);
-  
-    const handleChangePage = (event, newPage) => {
-      setPage(newPage);
-    };
-  
-    const handleChangeRowsPerPage = (event) => {
-      setRowsPerPage(parseInt(event.target.value, 10));
-      setPage(0);
-    };
+
 
     function cancelReservation(id) {
       const json = JSON.stringify({
@@ -559,11 +376,6 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
         });
     }
   
-    const isSelected = (number) => selected.indexOf(number) !== -1;
-  
-    // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows =
-      page > 0 ? Math.max(0, (1 + page) * rowsPerPage - rows.length) : 0;
   
     if (localStorage.getItem('userType') == 10) {
       return (
@@ -571,78 +383,6 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
         <ResponsiveAppBar />
         <Box sx={{ width: '100%' }}>
           <Paper sx={{ width: '70%', mb: 2, position: 'absolute', top: 130, left: 375, right: 0, justifyContent: 'center', alignItems: 'center' }}>
-            <EnhancedTableToolbar numSelected={selected.length} />
-            <TableContainer>
-              <Table
-                sx={{ minWidth: 350 }}
-                aria-labelledby="tableTitle"
-                size={'small'}
-              >
-                <EnhancedTableHead
-                  numSelected={selected.length}
-                  order={order}
-                  orderBy={orderBy}
-                  onSelectAllClick={handleSelectAllClick}
-                  onRequestSort={handleRequestSort}
-                  rowCount={rows.length}
-                />
-                <TableBody>
-                  {stableSort(rows, getComparator(order, orderBy))
-                    .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                    .map((row, index) => {
-                      const isItemSelected = isSelected(row.name);
-                      const labelId = `enhanced-table-checkbox-${index}`;
-    
-                      return (
-                        <TableRow
-                          hover
-                          aria-checked={isItemSelected}
-                          tabIndex={-1}
-                          key={row.number}
-                          selected={isItemSelected}
-                        >
-                          
-                          <TableCell
-                            component="th"
-                            id={labelId}
-                            scope="row"
-                            padding="none"
-                          >
-                            {row.number}
-                          </TableCell>
-                          <TableCell align="right">{row.firstName}</TableCell>
-                          <TableCell align="right">{row.surname}</TableCell>
-                          <TableCell align="right">{row.dorm}</TableCell>
-                          <TableCell align="right">{row.room}</TableCell>
-                          <TableCell align="right">{row.floor}</TableCell>
-                          <TableCell align="right">{row.status}</TableCell>
-                          <TableCell style={{display: row.status == "Laukiama depozito" ? 'block' : 'none' }}>
-                            <Button variant="contained" endIcon={<EuroIcon />} onClick={(event) => SetSelectedData(event, row.user_id, row.room_id, row._id, row.firstName, row.surname, row.dorm, row.room, row.floor, row.status)}>
-                              Sumokėti depozitą
-                            </Button>
-                          </TableCell>
-                          <TableCell style={{display: row.status == "Nepatvirtinta" ? 'block' : 'none' }}>
-                          <Tooltip title="Atšaukti rezervaciją">
-                            <IconButton aria-label="cancel" size="large" onClick={(event) => cancelReservation(row._id)}>
-                              <CancelIcon />
-                            </IconButton>
-                          </Tooltip>
-                          </TableCell>
-                        </TableRow>
-                      );
-                    })}
-                </TableBody>
-              </Table>
-            </TableContainer>
-            <TablePagination
-              rowsPerPageOptions={[50, 100, 200]}
-              component="div"
-              count={rows.length}
-              rowsPerPage={rowsPerPage}
-              page={page}
-              onPageChange={handleChangePage}
-              onRowsPerPageChange={handleChangeRowsPerPage}
-            />
               <MaterialTable
                 icons={tableIcons}
                 columns={[
@@ -652,7 +392,8 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
                 { title: "Bendrabutis", align: "left", field: "dorm" },
                 { title: "Kambarys", align: "left", field: "room" },
                 { title: "Aukštas", align: "left", field: "floor" },
-                { title: "Sukūrimo data", align: "left", field: "dateUploaded", defaultSort: "desc", type: "date" },
+                { title: "Sukūrimo data", align: "left", field: "createdDate", defaultSort: "desc", type: "date", dateSetting: {locale: "lt"} },
+                { title: "Apgyvendinimo pradžia", align: "left", field: "startingDate", defaultSort: "desc", type: "date", dateSetting: {locale: "lt"} },
                 { title: "Būsena", align: "left", field: "status" },
                 { title: "", align: "left",  export: false, filtering: false, field: "status", render: rowData => <Button style={{display: rowData.status == "Laukiama depozito" ? 'block' : 'none' }} variant="contained" endIcon={<EuroIcon />} onClick={() => SetSelectedData(rowData.user_id, rowData.room_id, rowData._id, rowData.firstName, rowData.surname, rowData.dorm, rowData.room, rowData.floor, rowData.status)}>Sumokėti depozitą</Button> },
                 { title: "", align: "center", export: false, filtering: false, render: rowData => <IconButton style={{display: rowData.status == "Nepatvirtinta" ? 'block' : 'none' }} aria-label="view" size="large" onClick={(event) => cancelReservation(rowData._id)}><CancelIcon /></IconButton>, filtering: false }
@@ -698,7 +439,8 @@ const stripePromise = loadStripe("pk_test_51KvQTcDUppirLbInEaeKDbh2PVoJYvpEzklG1
                 { title: "Bendrabutis", align: "left", field: "dorm" },
                 { title: "Kambarys", align: "left", field: "room" },
                 { title: "Aukštas", align: "left", field: "floor" },
-                { title: "Sukūrimo data", align: "left", field: "dateUploaded", defaultSort: "desc", type: "date" },
+                { title: "Sukūrimo data", align: "left", field: "createdDate", defaultSort: "desc", type: "date", dateSetting: {locale: "lt"} },
+                { title: "Apgyvendinimo pradžia", align: "left", field: "startingDate", defaultSort: "desc", type: "date", dateSetting: {locale: "lt"} },
                 { title: "Būsena", align: "left", field: "status" },
                 { title: "Keisti", align: "center", export: false, render: rowData => <IconButton aria-label="view" size="large" onClick={() => SetSelectedData(rowData.user_id, rowData.room_id, rowData._id, rowData.firstName, rowData.surname, rowData.dorm, rowData.room, rowData.floor, rowData.status)}><EditIcon /></IconButton>, filtering: false }
                 ]}
