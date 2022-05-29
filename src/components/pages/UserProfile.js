@@ -120,7 +120,7 @@ export default function UserProfile() {
                     <button id="sub_btn" type="submit">Keisti duomenis</button>
                 </p>
             </form>
-            <h2>Slaptažodžio keitimas (neveikia)</h2>
+            <h2>Slaptažodžio keitimas</h2>
             <form onSubmit={handleSubmitPassword}m>
                 <p>
                     <label>Dabartinis slaptažodis</label>
